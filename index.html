@@ -1,0 +1,1486 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Приют слёз</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=Cormorant+SC:wght@600&family=Marck+Script&display=swap">
+<style>
+/* Layout: one stage. Painted scene fills it; a portrait stands at the left; speech sits in a strip along the bottom; maps, battles and papers open over the scene. */
+:root{
+  color-scheme:dark;
+  --night:#0c0d10; --panel:#15161b; --edge:#3a3530;
+  --bone:#e9e2d0; --ash:#9c968a;
+  --candle:#d9a441; --wound:#b23a2e; --ghost:#a9d4e6; --chalk:#f4efe1;
+  --body:"Cormorant Garamond",Georgia,serif; --caps:"Cormorant SC",Georgia,serif;
+  --hand:"Caveat","Comic Sans MS",cursive; --whisper:"Marck Script","Caveat",cursive;
+}
+html,body{height:100%}
+[hidden]{display:none!important}
+body{background:var(--night);color:var(--bone);font-family:var(--body);font-size:20px;line-height:1.35;padding-inline:16px;box-sizing:border-box}
+#game{position:relative;height:100%;max-width:1120px;margin-inline:auto;overflow:hidden;background:var(--night)}
+#bg,#bg2{position:absolute;inset:-12px;background-size:cover;background-position:center;transition:opacity .9s}
+#fx,#vig{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#vig{background:radial-gradient(ellipse at 50% 40%,transparent 35%,rgba(5,5,8,.85) 100%)}
+#game.hurt #vig{animation:hurt .45s}
+@keyframes hurt{30%{background:radial-gradient(ellipse at 50% 40%,rgba(178,58,46,.25) 20%,rgba(120,10,10,.9) 100%)}}
+#top{position:absolute;inset:0 0 auto 0;display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap;padding:10px 14px;font-family:var(--caps);font-size:15px;letter-spacing:.06em;color:var(--ash);background:linear-gradient(rgba(5,5,8,.8),transparent);z-index:7}
+#top b{color:var(--bone);font-weight:600}
+#loc{color:var(--candle);margin-right:auto}
+#top button{font-family:var(--caps);font-size:14px;letter-spacing:.06em;color:var(--bone);background:rgba(21,22,27,.7);border:1px solid var(--edge);padding:3px 10px;cursor:pointer}
+#top button:hover,#top button:focus-visible{border-color:var(--candle);outline:none}
+/* portrait */
+#port{position:absolute;left:2%;bottom:150px;height:min(46%,380px);aspect-ratio:1;object-fit:contain;transition:opacity .4s,transform .4s;filter:drop-shadow(0 8px 30px #000)}
+#port.sq{-webkit-mask-image:radial-gradient(circle,#000 52%,transparent 71%);mask-image:radial-gradient(circle,#000 52%,transparent 71%)}
+#port.ghost{opacity:.82;filter:drop-shadow(0 0 26px rgba(169,212,230,.55));animation:float 4s ease-in-out infinite}
+#port.dim{opacity:.35}
+@keyframes float{50%{transform:translateY(-10px)}}
+/* centre card: drawings, papers, found things */
+#mid{position:absolute;inset:50px 0 160px 0;display:flex;align-items:center;justify-content:center;pointer-events:none;padding-inline:12px}
+.draw{background:#2a2b2c;border:10px solid #4a3b2c;box-shadow:0 14px 50px #000;padding:10px;max-width:min(430px,82%);transform:rotate(-1.5deg);animation:pop .5s}
+.draw img,.draw svg{display:block;width:100%;height:auto;max-height:38vh;object-fit:contain}
+.draw p{margin:8px 0 0;font-family:var(--hand);font-size:23px;line-height:1.1;color:var(--chalk);text-align:center}
+.doc{background:#d8ccae;color:#2c2318;font-family:var(--hand);font-size:23px;line-height:1.2;padding:22px 26px;max-width:min(470px,86%);box-shadow:0 14px 50px #000;transform:rotate(1deg);animation:pop .5s;max-height:100%;overflow:auto;pointer-events:auto}
+.doc h4{margin:0 0 8px;font-family:var(--caps);font-size:17px;letter-spacing:.1em;border-bottom:1px solid #2c231866;padding-bottom:4px}
+.doc p{margin:0 0 9px}
+.item{text-align:center;animation:pop .5s;max-width:min(380px,82%)}
+.item img{width:min(250px,34vh);height:min(250px,34vh);object-fit:contain;filter:drop-shadow(0 0 34px rgba(217,164,65,.5))}
+.item img.sq{border-radius:50%;object-fit:cover}
+.item h4{margin:6px 0 2px;font-family:var(--caps);font-size:21px;color:var(--candle);letter-spacing:.06em}
+.item p{margin:0;font-style:italic;text-shadow:0 2px 8px #000}
+@keyframes pop{from{opacity:0;transform:scale(.9) rotate(0)}}
+#whisper{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 8%;font-family:var(--whisper);font-size:clamp(30px,6vw,54px);line-height:1.15;color:var(--wound);text-shadow:0 0 30px #000,0 0 12px rgba(178,58,46,.6);background:rgba(5,5,8,.6);animation:creep 1.6s both;cursor:pointer;z-index:8;flex-direction:column;gap:18px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+#whisper small{font-family:var(--caps);font-size:13px;letter-spacing:.14em;color:var(--ash);text-shadow:none;animation:flick 1.6s 1.2s infinite both}
+@keyframes creep{from{opacity:0;letter-spacing:.3em;filter:blur(8px)}}
+/* speech strip */
+#box{position:absolute;inset:auto 0 0 0;min-height:132px;max-height:62%;overflow:auto;box-sizing:border-box;padding:18px 22px 20px;background:linear-gradient(transparent,rgba(8,8,11,.93) 26px);cursor:pointer;z-index:3}
+#box .inner{max-width:720px;margin-inline:auto;display:flex;flex-direction:column;gap:8px}
+#name{align-self:flex-start;font-family:var(--caps);font-size:18px;letter-spacing:.08em;padding:1px 12px;border-bottom:2px solid currentColor;margin-top:14px}
+#text{margin:14px 0 0;min-height:2.6em;text-shadow:0 2px 6px #000}
+#name+#text{margin-top:0}
+#box.n #text{font-style:italic;text-align:center;color:var(--bone)}
+#box.t #text{color:var(--ash);font-style:italic;border-left:2px solid var(--ash);padding-left:14px}
+#box.t #name{color:var(--ash);border:0;padding-left:0;font-size:14px}
+#box.g #text{color:var(--ghost);letter-spacing:.04em;text-shadow:0 0 14px rgba(169,212,230,.7);animation:flick 3s infinite}
+#box.a #text{font-family:var(--hand);font-size:26px;color:var(--chalk);line-height:1.1}
+@keyframes flick{0%,100%{opacity:1}47%{opacity:1}50%{opacity:.55}53%{opacity:1}}
+#more{align-self:flex-end;font-family:var(--caps);font-size:12px;letter-spacing:.14em;color:var(--ash);animation:flick 1.6s infinite}
+.opts{display:flex;flex-direction:column;gap:7px;margin-top:14px}
+.opts button,.btn{font-family:var(--body);font-size:20px;line-height:1.2;text-align:left;color:var(--bone);background:rgba(21,22,27,.85);border:1px solid var(--edge);border-left:3px solid var(--candle);padding:9px 14px;cursor:pointer;display:flex;gap:12px;align-items:baseline}
+.opts button:hover,.opts button:focus-visible,.btn:hover,.btn:focus-visible{background:#22232b;border-color:var(--candle);outline:none}
+.opts button.fight{border-left-color:var(--wound)}
+.opts .k{font-family:var(--caps);font-size:14px;color:var(--candle)}
+.opts .tag{margin-left:auto;font-family:var(--caps);font-size:13px;letter-spacing:.06em;color:var(--ash);white-space:nowrap}
+#toast{position:absolute;top:56px;right:14px;display:flex;flex-direction:column;gap:6px;align-items:flex-end;z-index:9;pointer-events:none}
+#toast div{font-family:var(--caps);font-size:15px;letter-spacing:.05em;background:rgba(12,13,16,.92);border:1px solid var(--edge);border-right:3px solid var(--candle);padding:5px 12px;animation:toast 4.2s both}
+#toast div.bad{border-right-color:var(--wound)}#toast div.gh{border-right-color:var(--ghost)}
+@keyframes toast{0%{opacity:0;transform:translateX(20px)}8%,85%{opacity:1;transform:none}100%{opacity:0}}
+/* overlays */
+#ov{position:absolute;inset:0;overflow:auto;background:rgba(8,8,11,.86);z-index:6;display:flex;flex-direction:column;padding:54px 16px 18px;box-sizing:border-box}
+#ov.clear{background:rgba(8,8,11,.55)}
+#ov h1{font-family:var(--caps);font-weight:600;font-size:clamp(40px,8vw,72px);margin:0;letter-spacing:.06em;line-height:1;text-wrap:balance;text-shadow:0 4px 30px #000}
+#ov h2{font-family:var(--caps);font-weight:600;font-size:26px;margin:0;letter-spacing:.06em;color:var(--candle)}
+.col{max-width:640px;width:100%;margin:auto;display:flex;flex-direction:column;gap:14px}
+.col p{margin:0;text-shadow:0 2px 8px #000}
+.small{font-size:16px;color:var(--ash)}
+/* map */
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{font-family:var(--caps);font-size:15px;letter-spacing:.06em;color:var(--ash);background:none;border:1px solid var(--edge);padding:4px 14px;cursor:pointer}
+.tabs button[aria-pressed=true]{color:var(--night);background:var(--candle);border-color:var(--candle)}
+.plan{display:grid;gap:5px;background:#1b1612;border:6px solid #2b231c;padding:5px;min-height:240px}
+.plan button{font-family:var(--caps);font-size:clamp(13px,2.4vw,17px);letter-spacing:.04em;line-height:1.1;color:var(--bone);background:#3a2e24;border:1px solid #5a4838;cursor:pointer;padding:8px 4px;min-height:92px;min-width:0;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;text-align:center;overflow-wrap:anywhere}
+.plan button:hover:not(:disabled),.plan button:focus-visible{border-color:var(--candle);background:#4a3a2c;outline:none}
+.plan button.seen{background:#241d18;color:var(--ash)}
+.plan button:disabled{background:repeating-linear-gradient(45deg,#17130f,#17130f 6px,#1f1914 6px,#1f1914 12px);color:#6a6156;cursor:not-allowed}
+.plan .stair{background:none;border:1px dashed #5a4838;color:var(--ash);font-family:var(--caps);font-size:13px;display:flex;align-items:center;justify-content:center;text-align:center}
+.plan small{font-family:var(--body);font-size:13px;color:var(--ash);letter-spacing:0}
+/* journal */
+.sheet{background:var(--panel);border:1px solid var(--edge);padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.sheet h3{margin:6px 0 0;font-family:var(--caps);font-size:16px;letter-spacing:.1em;color:var(--candle);font-weight:600}
+.sheet ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:5px;font-size:18px}
+.pips{display:inline-flex;gap:3px;vertical-align:middle;margin-left:8px}
+.pips i{width:11px;height:11px;border:1px solid var(--edge);transform:rotate(45deg)}
+.pips i.on{background:var(--candle);border-color:var(--candle)}.pips i.off{background:var(--wound);border-color:var(--wound)}
+/* dice */
+.dice{margin:auto;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center;cursor:pointer}
+.die{width:118px;height:118px;display:flex;align-items:center;justify-content:center;font-family:var(--caps);font-size:54px;color:var(--night);background:var(--bone);clip-path:polygon(50% 0,96% 26%,96% 74%,50% 100%,4% 74%,4% 26%)}
+.die.roll{animation:spin .7s linear}
+.die.ok{background:var(--candle)}.die.no{background:var(--wound);color:var(--bone)}
+@keyframes spin{to{transform:rotate(720deg)}}
+/* battle */
+.arena{flex:1;display:flex;flex-direction:column;gap:10px;max-width:860px;width:100%;margin-inline:auto;min-height:0}
+.foe{flex:1;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;position:relative}
+.foe img{flex:1;min-height:0;max-height:300px;aspect-ratio:1;object-fit:contain;animation:float 4s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(0,0,0,.9))}
+.foe img.sq{-webkit-mask-image:radial-gradient(circle,#000 52%,transparent 71%);mask-image:radial-gradient(circle,#000 52%,transparent 71%)}
+.foe.hit img{animation:hit .35s}
+@keyframes hit{20%{transform:translateX(-14px) scale(.96);filter:brightness(3)}60%{transform:translateX(10px)}}
+.dmg{position:absolute;top:30%;left:50%;font-family:var(--caps);font-size:46px;color:var(--bone);text-shadow:0 0 12px var(--wound),0 2px 4px #000;animation:rise .9s both;pointer-events:none}
+@keyframes rise{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-70px)}}
+.intent{font-family:var(--caps);font-size:16px;letter-spacing:.04em;color:var(--night);background:var(--candle);padding:2px 14px;text-align:center}
+.hpbar{width:min(320px,90%);height:12px;background:#000;border:1px solid var(--edge);position:relative}
+.hpbar i{display:block;height:100%;background:var(--wound);transition:width .4s}
+.stat{font-family:var(--caps);font-size:15px;letter-spacing:.04em;color:var(--ash);text-align:center;font-variant-numeric:tabular-nums}
+.stat b{color:var(--bone)}.stat .sh{color:#9db4c9}
+.me{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+.orbs{display:flex;gap:5px}
+.orbs i{width:16px;height:16px;border-radius:50%;border:1px solid var(--candle)}.orbs i.on{background:var(--candle);box-shadow:0 0 10px var(--candle)}
+.msg{text-align:center;font-style:italic;font-size:18px;min-height:1.4em;color:var(--bone)}
+.hand{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.cardb{width:118px;min-height:150px;box-sizing:border-box;padding:0 0 8px;background:linear-gradient(#26262e,#16161b);border:1px solid #5a5560;border-radius:6px;color:var(--bone);cursor:pointer;display:flex;flex-direction:column;gap:5px;text-align:center;font-family:var(--body);position:relative;transition:transform .15s,box-shadow .15s;animation:deal .3s both}
+@keyframes deal{from{opacity:0;transform:translateY(30px)}}
+.cardb:hover:not(:disabled),.cardb:focus-visible{transform:translateY(-10px);box-shadow:0 10px 24px #000,0 0 0 1px var(--candle);outline:none}
+.cardb:disabled{opacity:.4;cursor:not-allowed}
+.cardb .band{height:30px;border-radius:5px 5px 0 0;display:flex;align-items:center;justify-content:center;font-size:19px}
+.cardb.a .band{background:linear-gradient(#8f2d24,#5e1c17)}.cardb.d .band{background:linear-gradient(#4b6076,#2c3a49)}.cardb.s .band{background:linear-gradient(#6a4d86,#3f2c52)}.cardb.j .band{background:#333}
+.cardb .cost{position:absolute;top:-7px;left:-7px;width:26px;height:26px;border-radius:50%;background:var(--candle);color:var(--night);font-family:var(--caps);font-size:17px;line-height:26px}
+.cardb b{font-family:var(--caps);font-size:16px;line-height:1.05;padding:0 6px;font-weight:600}
+.cardb span.d{font-size:15.5px;line-height:1.12;padding:0 7px;color:#cfc8b6}
+.cardb kbd{font-family:var(--caps);font-size:11px;color:var(--ash);margin-top:auto}
+.brow{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap}
+.btn{border-left-width:1px;font-family:var(--caps);font-size:17px;letter-spacing:.06em}
+@media(max-width:620px){body{font-size:18px}#port{height:170px;bottom:170px}.cardb{width:102px;min-height:140px}.opts button{font-size:18px}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition:none!important}}
+.eyebrow{font-family:var(--caps);font-size:14px;letter-spacing:.16em;color:var(--candle);text-transform:lowercase}
+#menu{position:absolute;inset:0;z-index:20;background:rgba(6,6,9,.93);overflow:auto;display:flex;padding:30px 16px;box-sizing:border-box}
+#menu h2,#ov h2{font-family:var(--caps);font-weight:600;font-size:26px;margin:0;letter-spacing:.06em;color:var(--candle)}
+.mlist{display:flex;flex-direction:column;gap:8px}
+.mlist button,.btn2{font-family:var(--caps);font-size:19px;letter-spacing:.06em;text-align:left;color:var(--bone);background:var(--panel);border:1px solid var(--edge);padding:10px 16px;cursor:pointer;display:flex;gap:12px;align-items:baseline;justify-content:space-between}
+.mlist button:hover:not(:disabled),.mlist button:focus-visible,.btn2:hover:not(:disabled),.btn2:focus-visible{border-color:var(--candle);outline:none}
+.mlist button:disabled,.btn2:disabled{opacity:.45;cursor:not-allowed}
+.mlist small{font-family:var(--body);font-size:15px;color:var(--ash);letter-spacing:0;text-align:right}
+.vol{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;align-items:center;font-family:var(--caps);font-size:16px;color:var(--ash)}
+.vol input{width:100%;accent-color:var(--candle)}
+/* dice window */
+.dice{max-width:520px}
+.dice .ask{margin:0;font-style:italic;font-size:22px;text-shadow:0 2px 8px #000}
+.dice .calc{font-family:var(--caps);font-size:16px;letter-spacing:.04em;color:var(--ash)}
+.dice .calc b{color:var(--bone)}
+button.die{border:0;cursor:pointer;font-size:38px;transition:transform .15s,filter .15s}
+button.die:hover:not(:disabled),button.die:focus-visible{transform:scale(1.08);filter:drop-shadow(0 0 16px var(--candle));outline:none}
+button.die:disabled{cursor:default}
+/* character creation */
+#cr{max-width:820px}
+#cr .steps{display:flex;gap:6px;flex-wrap:wrap;font-family:var(--caps);font-size:14px;letter-spacing:.06em;color:var(--ash)}
+#cr .steps span{padding:2px 10px;border:1px solid var(--edge)}#cr .steps span.on{background:var(--candle);color:var(--night);border-color:var(--candle)}
+#cr input[type=text]{font-family:var(--body);font-size:22px;color:var(--bone);background:var(--panel);border:1px solid var(--edge);padding:8px 12px;width:100%;box-sizing:border-box}
+#cr input[type=text]:focus{outline:none;border-color:var(--candle)}
+#cr label{font-family:var(--caps);font-size:15px;letter-spacing:.08em;color:var(--candle)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:6px}
+.chip{font-family:var(--caps);font-size:16px;letter-spacing:.03em;color:var(--bone);background:var(--panel);border:1px solid var(--edge);padding:7px 8px;cursor:pointer;text-align:center;line-height:1.1}
+.chip:hover:not(:disabled),.chip:focus-visible{border-color:var(--candle);outline:none}
+.chip[aria-pressed=true]{background:var(--candle);color:var(--night);border-color:var(--candle)}
+.chip:disabled{opacity:.4;cursor:not-allowed}.chip.fix{border-style:dashed;color:var(--ash)}
+.info{background:rgba(21,22,27,.85);border:1px solid var(--edge);border-left:3px solid var(--candle);padding:12px 16px;font-size:18px;display:flex;flex-direction:column;gap:5px}
+.info b{font-family:var(--caps);letter-spacing:.04em}
+.abt{display:grid;grid-template-columns:minmax(0,1.5fr) auto auto auto auto minmax(0,.8fr) auto;gap:6px 10px;align-items:center;font-variant-numeric:tabular-nums}
+.abt .h{font-family:var(--caps);font-size:12px;letter-spacing:.08em;color:var(--ash)}
+.abt b{font-family:var(--caps);font-size:19px}.abt .sc{font-family:var(--caps);font-size:24px;color:var(--candle);text-align:center;min-width:1.6em}
+.abt button{width:34px;height:34px;font-size:20px;color:var(--bone);background:var(--panel);border:1px solid var(--edge);cursor:pointer}
+.abt button:hover:not(:disabled){border-color:var(--candle)}.abt button:disabled{opacity:.3;cursor:not-allowed}
+.abt button[aria-pressed=true]{background:var(--candle);color:var(--night)}
+.nav{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap}
+@media(max-width:620px){.abt{grid-template-columns:minmax(0,1fr) auto auto auto auto auto}.abt .cst{display:none}}
+#menu textarea{font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.3;color:var(--bone);background:var(--panel);border:1px solid var(--edge);padding:8px 10px;width:100%;box-sizing:border-box;height:96px;resize:vertical;word-break:break-all}
+#menu textarea:focus{outline:none;border-color:var(--candle)}
+.arena{position:relative}.me{position:relative}
+.cardb.use-a{animation:usea .26s forwards}.cardb.use-d{animation:used .26s forwards}.cardb.use-s,.cardb.use-j{animation:uses .26s forwards}
+@keyframes usea{to{transform:translateY(-170px) rotate(-10deg) scale(1.15);opacity:0}}
+@keyframes used{to{transform:translateY(-36px) scale(1.25);opacity:0;filter:brightness(2.2)}}
+@keyframes uses{to{transform:translateY(-90px) rotate(18deg) scale(.6);opacity:0;filter:brightness(2.6)}}
+.foe.atk img{animation:lunge .5s}@keyframes lunge{35%{transform:translateY(70px) scale(1.3);filter:brightness(1.5) drop-shadow(0 0 30px var(--wound))}}
+.foe.cast img{animation:cast .65s}@keyframes cast{50%{transform:scale(1.07);filter:brightness(2) drop-shadow(0 0 34px var(--wound))}}
+.foe.hit::after{content:"";position:absolute;top:34%;left:50%;width:min(240px,60%);height:5px;margin-left:calc(min(240px,60%)/-2);background:#fff;box-shadow:0 0 16px #fff;transform:rotate(-32deg);animation:slash .32s forwards;pointer-events:none}
+@keyframes slash{from{clip-path:inset(0 100% 0 0)}55%{clip-path:inset(0 0 0 0);opacity:1}to{clip-path:inset(0 0 0 0);opacity:0}}
+.banner{position:absolute;top:36%;left:50%;transform:translate(-50%,-50%);font-family:var(--caps);font-size:clamp(24px,5vw,42px);letter-spacing:.1em;color:var(--bone);text-shadow:0 0 18px #000,0 0 6px #000,0 0 34px var(--wound);pointer-events:none;animation:ban .45s;z-index:2;text-align:center;width:100%}
+.banner.you{text-shadow:0 0 18px #000,0 0 6px #000,0 0 34px var(--candle)}
+@keyframes ban{from{opacity:0;letter-spacing:.4em}}
+.pf{position:absolute;top:-38px;left:50%;font-family:var(--caps);font-size:36px;text-shadow:0 2px 6px #000;animation:rise .95s both;pointer-events:none;white-space:nowrap}
+.pf.dmg{color:#e0564a}.pf.blk{color:#9db4c9}.pf.heal{color:#8fc98f}
+#game.shake{animation:shake .45s}@keyframes shake{20%{transform:translate(-8px,4px)}40%{transform:translate(7px,-5px)}60%{transform:translate(-5px,-3px)}80%{transform:translate(4px,3px)}}
+.opts button.req .tag{color:var(--candle)}.opts button:disabled{opacity:.42;cursor:not-allowed;border-left-color:var(--edge)}.opts button:disabled .tag{color:var(--ash)}
+#toast div.cons{border-right-color:var(--ghost);color:var(--ghost);font-style:italic}
+.evc{background:rgba(12,13,16,.94);border:1px solid var(--edge);border-top:3px solid var(--ghost);padding:18px 24px;max-width:min(440px,86%);box-shadow:0 14px 50px #000;animation:pop .5s;display:flex;flex-direction:column;gap:6px}
+.evc .eyebrow{color:var(--ghost)}.evc h4{margin:0;font-family:var(--caps);font-size:26px;letter-spacing:.06em;color:var(--bone)}
+.evc p{margin:6px 0 0;font-family:var(--caps);font-size:14px;letter-spacing:.08em;color:var(--ash)}.evc ul{margin:0;padding-left:20px;font-style:italic;color:var(--ghost);font-size:19px}
+</style>
+
+<div id="game">
+  <div id="bg"></div><div id="bg2" style="opacity:0"></div><canvas id="fx"></canvas><div id="vig"></div>
+  <img id="port" alt="" hidden>
+  <div id="mid"></div>
+  <div id="top"><span id="loc"></span><span id="hpv"></span><button id="bj">Журнал</button><button id="bd">Колода</button><button id="bm">Меню</button></div>
+  <div id="box" hidden><div class="inner"><span id="name"></span><p id="text"></p><span id="more">дальше ▸</span><div class="opts" id="opts"></div></div></div>
+  <div id="ov" hidden></div>
+  <div id="menu" hidden></div>
+  <div id="toast"></div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),IMG=k=>`img/${k}.webp`;
+const rnd=n=>Math.random()*n|0,shuf=a=>a.sort(()=>Math.random()-.5);
+const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const CUT=['p_vera','p_nadya','p_mother','p_knight','p_skull','it_mask'];
+const KEY='priut-slez-v2';
+const AB={str:'Сила',dex:'Ловкость',con:'Телосложение',int:'Интеллект',wis:'Мудрость',cha:'Харизма'};
+const SK={acrobatics:['Акробатика','dex'],animal:['Уход за животными','wis'],arcana:['Магия','int'],athletics:['Атлетика','str'],deception:['Обман','cha'],history:['История','int'],
+ insight:['Проницательность','wis'],intimidation:['Запугивание','cha'],investigation:['Расследование','int'],medicine:['Медицина','wis'],nature:['Природа','int'],perception:['Внимательность','wis'],
+ performance:['Выступление','cha'],persuasion:['Убеждение','cha'],religion:['Религия','int'],sleight:['Ловкость рук','dex'],stealth:['Скрытность','dex'],survival:['Выживание','wis']};
+const ALLSK=Object.keys(SK);
+const BGD={
+ urchin:['Беспризорник',['sleight','stealth'],'Вы выросли на улице и хорошо знаете, как выглядит голодный ребёнок.'],
+ acolyte:['Прислужник',['insight','religion'],'Вы служили при храме и видели, как отпевают и как изгоняют.'],
+ criminal:['Преступник',['deception','stealth'],'Вы умеете врать и умеете слышать, когда врут вам.'],
+ folk:['Народный герой',['animal','survival'],'Деревни вроде тех, где пропали дети, для вас родные.'],
+ noble:['Благородный',['history','persuasion'],'Фамилию Лоялти вы слышали ещё в детстве, за обеденным столом.'],
+ sage:['Мудрец',['arcana','history'],'Вы читали книги, которые не выдают без записи в журнале.'],
+ soldier:['Солдат',['athletics','intimidation'],'Вы видели мёртвых. Мёртвых детей видели реже.']};
+const CLS={
+ barbarian:{n:'Варвар',sub:'Путь берсерка',hd:12,saves:['str','con'],prim:['str'],def:'con',nsk:2,sk:['animal','athletics','intimidation','nature','perception','survival'],rec:['str','con','dex','wis','cha','int'],
+  adr:'сударь великан',sn:'Удар секирой',dn:'Толстая шкура',gear:'Секира, два ручных топора, набор путешественника',trait:['Ярость и защита без доспехов','Защита считается от Телосложения. Карта «Ярость» даёт урон и срезает входящий.'],
+  deck:['strike','strike','strike','strike','defend','defend','defend','rage','reckless','frenzy'],extra:['cleave','wall']},
+ bard:{n:'Бард',sub:'Коллегия знаний',hd:8,saves:['dex','cha'],prim:['cha'],nsk:3,sk:'any',rec:['cha','dex','con','wis','int','str'],
+  adr:'сударь певец',sn:'Укол рапирой',dn:'Уход с линии',gear:'Рапира, лютня, кожаный доспех, кинжал',trait:['Мастер на все руки и компетентность','+1 ко всем проверкам без владения. Два первых выбранных навыка получают удвоенный бонус.'],
+  deck:['strike','strike','strike','defend','defend','defend','mockery','inspire','healword','whispers'],extra:['cutting','feint']},
+ fighter:{n:'Воин',sub:'Чемпион',hd:10,saves:['str','con'],prim:['str','dex'],heavy:1,nsk:2,sk:['acrobatics','animal','athletics','history','insight','intimidation','perception','survival'],rec:['str','con','dex','wis','cha','int'],
+  adr:'сударь воин',sn:'Удар мечом',dn:'Щит',gear:'Кольчуга, длинный меч, щит, лёгкий арбалет',trait:['Улучшенный критический удар','Каждая четвёртая атака за бой наносит двойной урон.'],
+  deck:['strike','strike','strike','strike','defend','defend','defend','defend','secondwind','surge'],extra:['cleave','wall','combo']},
+ wizard:{n:'Волшебник',sub:'Школа воплощения',hd:6,saves:['int','wis'],prim:['int'],nsk:2,sk:['arcana','history','insight','investigation','medicine','religion'],rec:['int','con','dex','wis','cha','str'],
+  adr:'сударь волшебник',sn:'Огненный снаряд',dn:'Доспехи мага',gear:'Посох, книга заклинаний, мешочек с компонентами',trait:['Магическое восстановление','Первое сгоревшее заклинание в каждом бою возвращается в сброс.'],
+  deck:['strike','strike','strike','strike','defend','defend','shield','missile','ray','misty'],extra:['orb','thunder']},
+ druid:{n:'Друид',sub:'Круг Луны',hd:8,saves:['int','wis'],prim:['wis'],nsk:2,sk:['arcana','animal','insight','medicine','nature','perception','religion','survival'],rec:['wis','con','dex','int','cha','str'],
+  adr:'сударь лесник',sn:'Терновый кнут',dn:'Деревянный щит',gear:'Деревянный щит, скимитар, друидический фокус, кожаный доспех',trait:['Естественное восстановление','После каждого выигранного боя вы восстанавливаете 3 здоровья.'],
+  deck:['strike','strike','strike','defend','defend','defend','bear','thunder','healword','bark'],extra:['cure','wall']},
+ cleric:{n:'Жрец',sub:'Домен жизни',hd:8,saves:['wis','cha'],prim:['wis'],heavy:1,nsk:2,sk:['history','insight','medicine','persuasion','religion'],rec:['wis','con','str','cha','dex','int'],
+  adr:'святой отец',sn:'Священное пламя',dn:'Щит',gear:'Булава, чешуйчатый доспех, щит, священный символ',trait:['Ученик жизни','Любое ваше лечение восстанавливает на 3 больше. Мёртвых можно отпустить молитвой.'],
+  deck:['strike','strike','strike','defend','defend','defend','bolt','cure','turn','shieldfaith'],extra:['smite','healword']},
+ warlock:{n:'Колдун',sub:'Покровитель: Исчадие',hd:8,saves:['wis','cha'],prim:['cha'],nsk:2,sk:['arcana','deception','history','intimidation','investigation','nature','religion'],rec:['cha','con','dex','wis','int','str'],
+  adr:'сударь колдун',sn:'Мистический заряд',dn:'Тёмный покров',gear:'Лёгкий арбалет, магическая фокусировка, кожаный доспех, два кинжала',trait:['Благословение Тёмного','После каждого выигранного боя вы восстанавливаете 5 здоровья.'],
+  deck:['strike','strike','strike','strike','defend','defend','defend','hex','rebuke','hadar'],extra:['whispers','misty']},
+ paladin:{n:'Паладин',sub:'Клятва преданности',hd:10,saves:['wis','cha'],prim:['str'],heavy:1,nsk:2,sk:['athletics','insight','intimidation','medicine','persuasion','religion'],rec:['str','cha','con','wis','dex','int'],
+  adr:'сударь рыцарь',sn:'Удар мечом',dn:'Щит',gear:'Кольчуга, длинный меч, щит, священный символ',trait:['Божественное чувство','Нежить и исчадия начинают бой уязвимыми. Мёртвых можно отпустить молитвой.'],
+  deck:['strike','strike','strike','strike','defend','defend','defend','smite','layon','shieldfaith'],extra:['cleave','cure']},
+ rogue:{n:'Плут',sub:'Вор',hd:8,saves:['dex','int'],prim:['dex'],nsk:4,sk:['acrobatics','athletics','deception','insight','intimidation','investigation','perception','performance','persuasion','sleight','stealth'],rec:['dex','con','wis','int','cha','str'],
+  adr:'сударь',sn:'Укол кинжалом',dn:'Уворот',gear:'Рапира, короткий лук, воровские инструменты, кожаный доспех',trait:['Скрытая атака и компетентность','Первая атака каждого хода наносит +4 урона. Два первых выбранных навыка получают удвоенный бонус.'],
+  deck:['strike','strike','strike','strike','defend','defend','defend','cunning','dodge','shiv'],extra:['feint','trip']},
+ sorcerer:{n:'Чародей',sub:'Наследие драконьей крови',hd:6,saves:['con','cha'],prim:['cha'],nsk:2,sk:['arcana','deception','insight','intimidation','persuasion','religion'],rec:['cha','con','dex','wis','int','str'],hpb:3,
+  adr:'сударь чародей',sn:'Огненный снаряд',dn:'Драконья чешуя',gear:'Лёгкий арбалет, магическая фокусировка, два кинжала',trait:['Драконья стойкость','+1 здоровье за каждый уровень. «Ускоренное заклинание» даёт энергию и карту.'],
+  deck:['strike','strike','strike','strike','defend','defend','defend','quicken','orb','thunder'],extra:['shield','ray']},
+ ranger:{n:'Следопыт',sub:'Охотник',hd:10,saves:['str','dex'],prim:['dex','str'],nsk:3,sk:['animal','athletics','insight','investigation','nature','perception','stealth','survival'],rec:['dex','wis','con','str','int','cha'],
+  adr:'сударь охотник',sn:'Выстрел из лука',dn:'Уворот',gear:'Длинный лук, два коротких меча, чешуйчатый доспех',trait:['Избранный враг: нежить','В первый ход каждого боя вы берёте на одну карту больше.'],
+  deck:['strike','strike','strike','strike','defend','defend','defend','mark','colossus','cure'],extra:['feint','combo']}};
+const CL={
+ door:['Надпись на двери','«Тут вы найдёте любовь». Вырезано ножом, криво, но старательно.'],
+ kitchen:['Тёплый очаг','На кухне готовят каждый день. Только не еду.'],
+ drawings:['Рисунки мелом','Кто-то рисует по всему дому. Мел свежий: рисует живой ребёнок.'],
+ bodies:['Тела без ран','Дети в столовой умерли без единой раны. У них лопнуло что-то в голове.'],
+ babies:['Семеро малышей','Пропавшие младенцы на втором этаже. Живы, опоены сонным зельем.'],
+ coven:['Три женщины и красный камень','Рисунок шабаша: три карги. Одна в шрамах, две другие ещё маленькие.'],
+ papa:['«Папа»','Лицо с обсидиановой кожей в короне из шипов. Князь демонов Граз’зт. Кто-то в доме зовёт его отцом.'],
+ staff:['Портрет персонала','Пятеро взрослых. Пятая: немолодая красавица в чёрном, Любовь Марковна.'],
+ ledger:['Книга доходов','Детей продавали. Напротив имён стоят суммы и слово «усыновлён».'],
+ board:['Школьная доска','Женщина в шрамах дерётся с директрисой. Дети вокруг улыбаются.'],
+ names:['Архив','Вера и Надежда записаны без родителей. Обеих приняла Любовь Марковна в день их рождения.'],
+ self:['Ваше имя','В списке выпущенных детей стоит ваше имя. Вы выросли здесь и ничего не помните.'],
+ summon:['Красный круг','Кто-то из детей призвал в дом тварь. Круг чертили в подвале.'],
+ diary:['Дневник старшей девочки','«Усыновлённые» пропадали по ночам, после гостей в белых масках.'],
+ closets:['Шкафы','В подвальных шкафах запирали детей. Изнутри исцарапано: «я так больше не буду».'],
+ mirrors:['Разбитые зеркала','На третьем этаже живёт взрослая женщина. Она бьёт зеркала кулаком.'],
+ puppet:['Человечек на верёвках','Надежда рисует не прошлое. Она рисует то, что собирается сделать.'],
+ cult:['Алтарь','В подвале молились князю демонов и приносили ему жертвы.'],
+ mask:['Алебастровая маска','Маска гостя. В таких приходили те, кто платил директрисе.']};
+
+let S=null,Q=[],wait=null,typing=null,B=null,ASK='',atHub=false;
+const cls=()=>CLS[S.pc.cls];
+const mod=a=>Math.floor((S.pc.ab[a]-10)/2),sg=n=>(n>=0?'+':'')+n;
+const PM=()=>Math.max(...cls().prim.map(mod));
+const DM=()=>cls().heavy?2:cls().def?Math.max(0,mod(cls().def)):Math.max(0,Math.min(3,mod('dex')));
+function bonus(k){
+  if(k.startsWith('save:')){const a=k.slice(5),p=cls().saves.includes(a)?2:0;return{v:mod(a)+p,name:`Спасбросок: ${AB[a]}`,parts:`${AB[a]} ${sg(mod(a))}${p?', владение +2':''}`}}
+  const[a]=[SK[k][1]],has=S.pc.sk.includes(k),ex=S.pc.ex.includes(k),p=ex?4:has?2:S.pc.cls=='bard'?1:0;
+  return{v:mod(a)+p,name:`${SK[k][0]} (${AB[a]})`,parts:`${AB[a]} ${sg(mod(a))}${ex?', компетентность +4':has?', владение +2':p?', мастер на все руки +1':''}`}}
+function fresh(pc){const c=CLS[pc.cls],con=Math.floor((pc.ab.con-10)/2),hp=c.hd+2*(c.hd/2+1)+3*con+(c.hpb||0);
+  return norm({pc,hp,max:hp,deck:[...c.deck],clues:[],f:{},rel:{vera:0,nadya:0},g:{},seen:{},count:0,wrath:0,floor:1})}
+function norm(s){s.evlog=s.evlog||[];s.cons=s.cons||[];s.att=s.att||0;s.ev=s.ev||{};s.evcd=s.evcd||0;return s}
+const F=k=>S.f[k],has=c=>S.clues.includes(c);
+const T=t=>t.replace(/\{adr\}/g,cls().adr);
+
+/* ---------- sound: everything is synthesised ---------- */
+const AU={ctx:null,mv:.55,sv:.7,cur:null,want:'title'};
+try{const c=JSON.parse(localStorage.getItem(KEY+'-cfg'));if(c){AU.mv=c.mv;AU.sv=c.sv}}catch(e){}
+const MOODS={
+ title:{root:110,ch:[1,1.5,2.01],cut:520,g:.10,bpm:58,tim:'box',oct:2,mel:[0,null,7,null,3,null,2,null,0,null,-2,null,3,null,null,null,0,null,7,null,8,null,7,null,3,null,2,null,0,null,null,null]},
+ house:{root:98,ch:[1,1.498,2.02],cut:380,g:.10,bpm:46,tim:'box',oct:2,mel:[0,null,null,null,null,null,3,null,null,null,null,null,null,null,null,null,7,null,null,null,null,null,null,null,5,null,null,null,null,null,null,null],rnd:.04,sc:[0,3,7,10],ro:3},
+ calm:{root:130.8,ch:[1,1.25,1.5],cut:700,g:.07,bpm:54,tim:'box',oct:2,mel:[0,null,4,null,7,null,null,null,9,null,7,null,4,null,null,null,2,null,5,null,9,null,null,null,7,null,4,null,2,null,null,null]},
+ relief:{root:130.8,ch:[1,1.26,1.5,2],cut:1100,g:.09,bpm:66,tim:'box',oct:2,mel:[0,null,4,null,7,null,12,null,11,null,7,null,4,null,null,null,5,null,9,null,12,null,16,null,14,null,12,null,7,null,null,null]},
+ babies:{root:174.6,ch:[1,1.26,1.5],cut:800,g:.05,bpm:60,tim:'box',oct:2,mel:[4,null,2,null,0,null,null,null,4,null,2,null,0,null,null,null,7,null,5,null,4,null,2,null,0,null,null,null,null,null,null,null]},
+ girls:{root:155.6,ch:[1,1.19,1.5],cut:600,g:.06,bpm:92,tim:'box',oct:2,mg:.1,sting:'glint',mel:[7,null,3,7,null,3,5,null,2,5,null,2,3,null,0,3,null,0,-1,null,2,null,null,null,7,null,3,7,null,3,8,null,5,8,null,5,6,null,3,2,null,0,null,null,null,null,null,null]},
+ theater:{root:116.5,ch:[1,1.19,1.5],cut:520,g:.07,bpm:104,tim:'pluck',oct:1,mg:.07,mel:[0,null,7,null,7,null,3,null,7,null,7,null,2,null,7,null,7,null,-1,null,5,null,5,null,0,null,7,null,7,null,3,null,8,null,8,null,2,null,6,null,6,null,null,null,null,null,null,null]},
+ ghost:{root:146.8,ch:[1,1.19,1.5,2],cut:900,g:.06,bpm:46,tim:'voice',oct:1,sting:'breath',mel:[0,null,null,null,3,null,null,null,2,null,null,null,-1,null,null,null,0,null,null,null,7,null,null,null,5,null,null,null,3,null,null,null]},
+ red:{root:87.3,ch:[1,1.414,2.02],cut:480,g:.10,bpm:50,tim:'bell',oct:2,mel:[0,null,null,null,6,null,null,null,null,null,5,null,null,null,null,null],drum:'heart'},
+ cellar:{root:55,ch:[1,1.06,1.5],cut:230,g:.15,bpm:40,tim:'pluck',oct:4,rnd:.12,sc:[0,1,6,7,12],ro:5,rt:'box'},
+ altar:{root:55,ch:[1,1.06,1.414],cut:300,g:.15,bpm:54,tim:'voice',oct:1,mel:[0,null,null,null,1,null,null,null,0,null,null,null,6,null,null,null],drum:'heart',sting:'boom'},
+ dread:{root:65.4,ch:[1,1.059,1.414],cut:330,g:.14,bpm:62,tim:'bell',oct:2,mel:[0,null,null,null,null,null,1,null,null,null,null,null,null,null,null,null],drum:'heart'},
+ mother:{root:61.7,ch:[1,1.059,1.5,2.12],cut:420,g:.15,bpm:66,tim:'bell',oct:2,sting:'boom',mel:[0,null,null,1,null,null,null,null,6,null,null,null,null,null,null,null,0,null,null,1,null,null,null,null,8,null,7,null,6,null,null,null],drum:'heart'},
+ battle:{root:73.4,ch:[1,1.5,2],cut:650,g:.08,bpm:126,tim:'pluck',oct:2,mg:.06,drum:'war',bass:[0,0,null,0,3,null,0,null,5,5,null,5,3,null,2,null],mel:[null,null,null,null,12,null,10,null,null,null,null,null,7,null,8,null,null,null,null,null,12,null,15,null,null,null,14,null,12,null,10,null]},
+ boss:{root:61.7,ch:[1,1.059,1.5,2],cut:760,g:.10,bpm:140,tim:'pluck',oct:2,mg:.07,drum:'boss',bass:[0,null,0,1,null,0,null,6,0,null,0,1,null,8,7,6],mel:[12,null,null,13,null,null,12,null,null,null,18,null,null,null,null,null,12,null,null,13,null,null,15,null,null,null,20,null,19,null,18,null]}};
+function auInit(){
+  if(AU.ctx){if(AU.ctx.state=='suspended')AU.ctx.resume();return}
+  try{const c=new(window.AudioContext||window.webkitAudioContext)();AU.ctx=c;
+    AU.mg=c.createGain();AU.mg.gain.value=AU.mv;AU.mg.connect(c.destination);AU.sg=c.createGain();AU.sg.gain.value=AU.sv;AU.sg.connect(c.destination);
+    const d=c.createDelay(1),fb=c.createGain(),lp=c.createBiquadFilter();d.delayTime.value=.37;fb.gain.value=.45;lp.frequency.value=1700;d.connect(lp);lp.connect(fb);fb.connect(d);lp.connect(AU.mg);AU.rev=d;
+    const b=c.createBuffer(1,c.sampleRate*2,c.sampleRate),ch=b.getChannelData(0);for(let i=0;i<ch.length;i++)ch[i]=Math.random()*2-1;AU.noise=b;
+    const w=AU.want;AU.want=null;mood(w,AU.wsh);setInterval(tick,90)}catch(e){AU.ctx=null}}
+addEventListener('pointerdown',auInit);addEventListener('keydown',auInit);
+function mood(m,sh){
+  if(!m||!MOODS[m])return;sh=sh||1;if(!AU.ctx){AU.want=m;AU.wsh=sh;return}const id=m+sh;if(AU.cur&&AU.cur.id==id)return;
+  const c=AU.ctx,t=c.currentTime,old=AU.cur,d=MOODS[m];
+  if(old){old.g.gain.cancelScheduledValues(t);old.g.gain.setTargetAtTime(0,t,.6);setTimeout(()=>old.os.forEach(o=>{try{o.stop()}catch(e){}}),3500)}
+  const g=c.createGain(),f=c.createBiquadFilter();g.gain.value=0;g.gain.setTargetAtTime(d.g,t,1);f.type='lowpass';f.frequency.value=d.cut;f.Q.value=2;f.connect(g);g.connect(AU.mg);
+  const os=[];d.ch.forEach((r,i)=>{[-4,5].forEach(dt=>{const o=c.createOscillator();o.type=i?'triangle':'sawtooth';o.frequency.value=d.root*sh*r;o.detune.value=dt+i*2;o.connect(f);o.start();os.push(o)})});
+  const l=c.createOscillator(),lg=c.createGain();l.frequency.value=.07;lg.gain.value=d.cut*.35;l.connect(lg);lg.connect(f.frequency);l.start();os.push(l);
+  AU.cur={m,id,sh,g,os,d,beat:t+.45,n:0};if(d.sting&&(!old||old.m!=m))sfx(d.sting);
+}
+function env(node,t,a,dur,peak,out){const g=AU.ctx.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+a);g.gain.exponentialRampToValueAtTime(.0005,t+a+dur);node.connect(g);g.connect(out||AU.sg);return g}
+function tone(f,t,a,dur,peak,type,out,f2){const o=AU.ctx.createOscillator();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+a+dur);const g=env(o,t,a,dur,peak,out);o.start(t);o.stop(t+a+dur+.05);return g}
+function noise(t,a,dur,peak,type,freq,q,out,f2){const c=AU.ctx,s=c.createBufferSource(),f=c.createBiquadFilter();s.buffer=AU.noise;s.loop=true;f.type=type;f.frequency.setValueAtTime(freq,t);if(f2)f.frequency.exponentialRampToValueAtTime(f2,t+a+dur);f.Q.value=q||1;s.connect(f);env(f,t,a,dur,peak,out);s.start(t,Math.random());s.stop(t+a+dur+.05)}
+function voice(tim,f,t,g){const o=AU.mg;
+  if(tim=='box'){tone(f,t,.005,1.4,g,'sine',o).connect(AU.rev);tone(f*3.01,t,.005,.4,g*.28,'sine',o)}
+  else if(tim=='bell'){[1,2.76,5.4].forEach((r,i)=>tone(f*r,t,.01,3.2/(i+1),g*.7/(i+1),'sine',o).connect(AU.rev))}
+  else if(tim=='voice'){tone(f,t,.6,2.2,g*.8,'triangle',o).connect(AU.rev);tone(f*1.006,t,.6,2.2,g*.5,'sine',o)}
+  else if(tim=='bass'){const c=AU.ctx,os=c.createOscillator(),fl=c.createBiquadFilter();os.type='sawtooth';os.frequency.value=f;fl.type='lowpass';fl.frequency.setValueAtTime(900,t);fl.frequency.exponentialRampToValueAtTime(180,t+.18);os.connect(fl);env(fl,t,.005,.2,g,o);os.start(t);os.stop(t+.3)}
+  else tone(f,t,.005,.26,g,'sawtooth',o).connect(AU.rev)}
+function drum(kind,k,b){const o=AU.mg;
+  if(kind=='heart'){if(k%8==0)tone(58,b,.01,.14,.3,'sine',o,40);if(k%8==2)tone(52,b,.01,.14,.2,'sine',o,38)}
+  else if(kind=='war'){if(k%4==0)tone(125,b,.003,.17,.34,'sine',o,42);if(k%4==2){noise(b,.002,.11,.14,'bandpass',1900,1,o);tone(180,b,.002,.08,.1,'triangle',o,120)}if(k%2)noise(b,.002,.04,.04,'highpass',6000,1,o)}
+  else if(kind=='boss'){const s=k%8;if(s==0||s==3||s==6)tone(110,b,.003,.2,.38,'sine',o,36);if(s==4){noise(b,.002,.14,.17,'bandpass',1700,1,o);tone(170,b,.002,.1,.12,'triangle',o,100)}noise(b,.002,.03,.03,'highpass',7000,1,o);if(k%16==14||k%16==15)tone(90,b,.003,.16,.24,'sine',o,60)}}
+function tick(){
+  const a=AU.cur,c=AU.ctx;if(!a||c.state!='running')return;const d=a.d,t=c.currentTime,st=30/d.bpm,r=d.root*a.sh;
+  if(a.beat<t)a.beat=t+.05;
+  while(a.beat<t+.3){const b=a.beat,k=a.n++;
+    if(d.mel){const v=d.mel[k%d.mel.length];if(v!=null)voice(d.tim,r*Math.pow(2,d.oct+v/12),b,d.mg||.08)}
+    if(d.bass){const v=d.bass[k%d.bass.length];if(v!=null)voice('bass',r*Math.pow(2,v/12),b,.17)}
+    if(d.rnd&&Math.random()<d.rnd)voice(d.rt||d.tim,r*Math.pow(2,d.ro+d.sc[rnd(d.sc.length)]/12),b,.05);
+    drum(d.drum,k,b);a.beat+=st}
+}
+function sfx(k){
+  const c=AU.ctx;if(!c||c.state!='running')return;const t=c.currentTime+.01;
+  switch(k){
+   case'scare':[311,330,466,494,622,659].forEach(f=>tone(f,t,.004,1.1,.13,'sawtooth'));tone(62,t,.004,1.3,.8,'sine',null,28);noise(t,.003,.35,.45,'highpass',1800,1);noise(t+.05,.2,1.4,.25,'bandpass',700,5,null,2600);break;
+   case'whoosh':noise(t,.03,.13,.22,'bandpass',700,1.5,null,2800);break;
+   case'slash':noise(t,.004,.12,.4,'bandpass',5200,2,null,900);tone(1400,t,.002,.08,.08,'sawtooth',null,300);break;
+   case'magic':tone(700,t,.01,.28,.16,'sine',null,1900).connect(AU.rev);[1568,2093,2637].forEach((f,i)=>tone(f,t+.06+i*.05,.004,.25,.06).connect(AU.rev));noise(t,.01,.2,.1,'highpass',6000,1);break;
+   case'fire':noise(t,.02,.32,.4,'lowpass',350,1,null,3000);tone(140,t+.12,.004,.25,.35,'sine',null,50);break;
+   case'holyfx':[523,784,1046,1568].forEach((f,i)=>tone(f,t+i*.03,.02,.9,.09).connect(AU.rev));noise(t,.02,.25,.08,'highpass',7000,1);break;
+   case'buff':tone(220,t,.02,.38,.16,'triangle',null,700);tone(330,t+.08,.02,.34,.1,'sine',null,990).connect(AU.rev);break;
+   case'roar':{const g=tone(110,t,.03,.5,.35,'sawtooth',null,62),f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=520;g.disconnect();g.connect(f);f.connect(AU.sg);noise(t,.03,.4,.22,'bandpass',420,2);break}
+   case'foeatk':{const g=tone(150,t,.01,.26,.4,'sawtooth',null,55),f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=700;g.disconnect();g.connect(f);f.connect(AU.sg);noise(t,.005,.16,.3,'bandpass',1100,1,null,300);break}
+   case'start':tone(70,t,.004,.9,.7,'sine',null,34);noise(t,.004,.9,.2,'highpass',5000,1);[110,165,220].forEach((f,i)=>{const g=tone(f,t+.05,.25,.7,.14,'sawtooth',null,f*1.5),fl=c.createBiquadFilter();fl.type='lowpass';fl.frequency.value=900;g.disconnect();g.connect(fl);fl.connect(AU.sg)});break;
+   case'victory':[392,494,587,784].forEach((f,i)=>tone(f,t+i*.13,.01,.6,.15,'triangle').connect(AU.rev));[392,494,587,784,988].forEach(f=>tone(f,t+.6,.05,2.4,.07,'sine').connect(AU.rev));break;
+   case'defeat':[294,277,220,147].forEach((f,i)=>tone(f,t+i*.38,.03,1,.17,'triangle',null,f*.94).connect(AU.rev));tone(55,t+1.2,.05,2,.4,'sine',null,36);break;
+   case'boom':tone(52,t,.01,1.6,.75,'sine',null,26);noise(t,.01,1,.3,'lowpass',260,1);[466,494].forEach(f=>tone(f,t+.1,.4,1.6,.05,'sawtooth'));break;
+   case'glint':[1568,2093,1865].forEach((f,i)=>tone(f,t+i*.14,.004,.9,.07).connect(AU.rev));break;
+   case'breath':noise(t,.6,1.2,.16,'bandpass',500,3,null,1300);tone(294,t+.2,.6,1.2,.04,'sine',null,277).connect(AU.rev);break;
+   case'click':tone(700,t,.002,.04,.08,'triangle');break;
+   case'dice':for(let i=0,x=0;i<9;i++){x+=.04+Math.random()*.09;tone(260+rnd(500),t+x,.001,.045,.22,'triangle');noise(t+x,.001,.03,.18,'bandpass',2600+rnd(2000),2)}break;
+   case'land':tone(210,t,.001,.09,.4,'triangle',null,120);noise(t,.001,.05,.25,'bandpass',1800,1);break;
+   case'ok':tone(660,t,.005,.5,.14).connect(AU.rev);tone(990,t+.12,.005,.8,.14).connect(AU.rev);break;
+   case'fail':tone(196,t,.01,.6,.2,'sawtooth',null,150);tone(185,t+.05,.01,.7,.16,'triangle',null,120);break;
+   case'hit':noise(t,.002,.13,.5,'lowpass',1500,1);tone(170,t,.002,.2,.4,'sine',null,50);break;
+   case'block':noise(t,.001,.06,.3,'bandpass',3200,4);tone(820,t,.001,.07,.12,'square');break;
+   case'hurt':tone(95,t,.005,.35,.55,'sine',null,38);noise(t,.005,.2,.25,'lowpass',600,1);break;
+   case'card':noise(t,.01,.07,.1,'highpass',2500,1);break;
+   case'heal':[523,659,784].forEach((f,i)=>tone(f,t+i*.07,.01,.5,.09).connect(AU.rev));break;
+   case'whisper':noise(t,.3,1.5,.3,'bandpass',900,6,null,2400);noise(t+.2,.3,1.3,.2,'bandpass',2600,8,null,700);break;
+   case'page':noise(t,.02,.2,.2,'bandpass',1600,1,null,3500);break;
+   case'door':{const g=tone(72,t,.15,.9,.18,'sawtooth',null,118),f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=650;f.Q.value=9;g.disconnect();g.connect(f);f.connect(AU.sg);noise(t+.9,.002,.08,.2,'lowpass',400,1);break}
+   case'chalk':for(let i=0;i<4;i++)noise(t+i*.16,.02,.1,.12,'bandpass',3600+rnd(900),5);break;
+   case'knock':[0,.28,.56].forEach(x=>{tone(1500,t+x,.001,.05,.2,'triangle');noise(t+x,.001,.03,.12,'bandpass',4200,6)});break;
+   case'clap':for(let i=0;i<26;i++)noise(t+Math.random()*1.5,.001,.035,.16,'bandpass',1300+rnd(1400),1);break;
+   case'clue':tone(880,t,.005,.9,.1).connect(AU.rev);tone(1318,t+.09,.005,1.1,.08).connect(AU.rev);break;
+   case'cry':for(let i=0;i<3;i++){const g=tone(560,t+i*.42,.08,.26,.07,'sawtooth',null,470),f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=1300;f.Q.value=3;g.disconnect();g.connect(f);f.connect(AU.rev)}break;
+   case'laugh':for(let i=0;i<7;i++)tone(700-i*30,t+i*.11,.01,.07,.08,'square',null,520).connect(AU.rev);break;
+  }
+}
+function setVol(){if(AU.ctx){AU.mg.gain.value=AU.mv;AU.sg.gain.value=AU.sv}try{localStorage.setItem(KEY+'-cfg',JSON.stringify({mv:AU.mv,sv:AU.sv}))}catch(e){}}
+
+/* ---------- small helpers ---------- */
+function toast(t,c){const d=document.createElement('div');d.textContent=t;if(c)d.className=c;$('#toast').append(d);setTimeout(()=>d.remove(),4300)}
+function clue(id){if(has(id))return;S.clues.push(id);toast('Улика: '+CL[id][0]);sfx('clue')}
+function rel(w,n){S.rel[w]=Math.max(-3,Math.min(5,S.rel[w]+n));toast(n>0?`${CH[w].n} к вам теплеет`:`${CH[w].n} это запомнит`,n>0?'':'bad')}
+function peace(w){S.g[w]='peace';toast(`${CH[w].n}: покой`,'gh');sfx('heal')}
+function gain(c){S.deck.push(c);toast('Новая карта: '+cname(c))}
+function hp(n){S.hp=Math.max(1,Math.min(S.max,S.hp+n));if(n<0)flash();else sfx('heal');hud()}
+function flash(){const g=$('#game');g.classList.remove('hurt');void g.offsetWidth;g.classList.add('hurt');sfx('hurt')}
+function hud(){$('#hpv').innerHTML=S?`${S.pc.name} · здоровье <b>${S.hp}/${S.max}</b> · улики <b>${S.clues.length}</b>`:''}
+let bgOn=false,bgCur='';
+function setBg(k){if(k==bgCur)return;bgCur=k;const[im,fl]=BGS[k],a=$(bgOn?'#bg':'#bg2'),b=$(bgOn?'#bg2':'#bg');bgOn=!bgOn;
+  a.style.backgroundImage=`url(${IMG(im)})`;a.style.filter=fl;a.style.opacity=1;b.style.opacity=0}
+function portrait(w,dim){const p=$('#port');if(!w){p.hidden=true;return}const c=CH[w];p.hidden=false;p.src=IMG(c.img);
+  p.className=(CUT.includes(c.img)?'':'sq ')+(c.gh?'ghost ':'')+(dim?'dim':'')}
+const CH={
+ vera:{n:'Вера',img:'p_vera',c:'#c3a6e6'},nadya:{n:'Надежда',img:'p_nadya',c:'#e9a23b'},mother:{n:'Матушка Любовь',img:'p_mother',c:'#d4553f'},
+ dorothy:{n:'Дороти Мартин',img:'g2',gh:1},olivia:{n:'Оливия Лоялти',img:'g1',gh:1},john:{n:'Джон Доу',img:'g3',gh:1},demid:{n:'Демид Воробьёв',img:'g4',gh:1},
+ kids:{n:'Дети из шкафов',img:'p_skull',gh:1},hero:{n:'Вы',img:'p_knight'}};
+CH.dorothy.key=.84;CH.olivia.key=1.19;CH.demid.key=.75;CH.kids.key=1.5;
+const BGS={road:['road',''],house:['house',''],hub:['house2','brightness(.5) blur(2px)'],hall:['house2','blur(7px) brightness(.5) sepia(.4)'],
+ theater:['dining','hue-rotate(40deg) brightness(.45) blur(3px)'],kitchen:['dining','sepia(.8) brightness(.45) blur(3px)'],play:['dining','hue-rotate(-30deg) brightness(.5) blur(4px)'],
+ dining:['dining','brightness(.8)'],wc:['library','hue-rotate(60deg) saturate(.5) brightness(.5) blur(5px)'],room:['library','sepia(.7) brightness(.45) blur(5px)'],
+ red:['dining','saturate(1.6) brightness(.5) blur(2px)'],library:['library','brightness(.85)'],dorm:['library','grayscale(.8) brightness(.4) blur(6px)'],
+ cellar:['road','brightness(.4) blur(4px) sepia(.6)'],altar:['road','sepia(1) hue-rotate(-40deg) saturate(3) brightness(.45) blur(3px)']};
+
+/* ---------- script interpreter ---------- */
+function run(steps){Q=steps.concat(Q);next()}
+function next(){
+  clearInterval(typing);typing=null;wait=null;$('#mid').innerHTML='';const w=$('#whisper');w&&w.remove();
+  const s=Q.shift();if(!s)return hub();
+  const k=s[0];
+  if(k=='n')return line('n',null,s[1],s[2]);
+  if(k=='t')return line('t','hero',s[1]);
+  if(k=='nd')return line('a','nadya',s[1]);
+  if(CH[k])return line(CH[k].gh?'g':'s',k,s[1]);
+  if(k=='w')return whisper(s[1]);
+  if(k=='draw'){sfx('chalk');$('#mid').innerHTML=`<div class="draw">${s[1].startsWith('svg:')?chalk(s[1].slice(4)):`<img src="${IMG(s[1])}" alt="">`}<p>${s[2]}</p></div>`;return line('n',null,s[3]||'',null,true)}
+  if(k=='doc'){sfx('page');$('#mid').innerHTML=`<div class="doc"><h4>${s[1]}</h4>${s[2].map(p=>`<p>${p}</p>`).join('')}</div>`;return line('n',null,s[3]||'',null,true)}
+  if(k=='item'){sfx('clue');$('#mid').innerHTML=`<div class="item"><img class="${CUT.includes(s[1])?'':'sq'}" src="${IMG(s[1])}" alt=""><h4>${s[2]}</h4><p>${s[3]}</p></div>`;return line('n',null,'',null,true)}
+  if(k=='clue'){clue(s[1]);return next()}
+  if(k=='evc'){sfx('glint');portrait(null);$('#mid').innerHTML=`<div class="evc"><span class="eyebrow">событие</span><h4>${s[1]}</h4><p>Это событие вызвано:</p><ul>${s[2].map(x=>`<li>${x}</li>`).join('')}</ul></div>`;return line('n',null,'',null,true)}
+  if(k=='cons'){S.cons.push(s[1]);toast('Это будет иметь последствия','cons');sfx('glint');return next()}
+  if(k=='do'){s[1]();hud();return next()}
+  if(k=='if'){Q=(s[1]()?s[2]:s[3]||[]).concat(Q);return next()}
+  if(k=='bg'){setBg(s[1]);if(s[2])$('#loc').textContent=s[2];return next()}
+  if(k=='sfx'){sfx(s[1]);return next()}
+  if(k=='mood'){mood(s[1]);return next()}
+  if(k=='ask'){ASK=s[1];return next()}
+  if(k=='roll')return roll(s[1],s[2],s[3],s[4]||[]);
+  if(k=='fight')return battle(s[1],s[2]||[]);
+  if(k=='choice')return choice(s[1]);
+  if(k=='menu'){const left=s[1].filter(o=>!o._u&&(!o.if||o.if())),ok=left.filter(o=>!o.need||(Array.isArray(o.need[0])?o.need:[o.need]).every(needOk));
+    if(s[2]<=0||!ok.length)return next();
+    return choice([...left.map(o=>({...o,s:[['do',()=>o._u=1],...o.s,['menu',s[1],s[2]-1]]})),{t:'Хватит разговоров',s:[]}])}
+  if(k=='go'){Q=[];return enter(s[1])}
+  if(k=='end'){Q=[];return ending()}
+  next();
+}
+function line(c,who,text,show,keep){
+  text=T(text||'');const b=$('#box');b.hidden=false;b.className=c;$('#opts').innerHTML='';
+  portrait(who||show,c=='t');if(keep&&!who)portrait(null);
+  if(who&&CH[who].gh)mood('ghost',CH[who].key||1);else if(who=='mother')mood('mother');else if(who=='vera'||who=='nadya')mood('girls');
+  const nm=$('#name');nm.hidden=!who;if(who){nm.textContent=c=='t'?'мысли':CH[who].n;nm.style.color=CH[who].gh?'var(--ghost)':CH[who].c||''}
+  const el=$('#text');$('#more').hidden=false;
+  if(calm||!text){el.textContent=text;wait=next;return}
+  let i=0;el.textContent='';typing=setInterval(()=>{i+=2;el.textContent=text.slice(0,i);if(i>=text.length)done()},16);
+  function done(){clearInterval(typing);typing=null;el.textContent=text;wait=next}
+  wait=()=>done();
+}
+function shake(){const g=$('#game');g.classList.remove('shake');void g.offsetWidth;g.classList.add('shake')}
+function whisper(t){sfx('scare');sfx('whisper');shake();$('#box').hidden=true;portrait(null);
+  const d=document.createElement('div');d.id='whisper';d.setAttribute('role','button');d.tabIndex=0;d.innerHTML=`<span>${t}</span><small>коснитесь, чтобы продолжить</small>`;$('#game').append(d);
+  let done=false;const go=e=>{if(e){e.preventDefault();e.stopPropagation()}if(done||!d.isConnected)return;done=true;clearTimeout(tm);wait=null;next()};
+  d.addEventListener('pointerup',go);d.addEventListener('click',go);d.addEventListener('touchend',go,{passive:false});
+  const tm=setTimeout(()=>go(),4500);wait=go}
+function choice(opts){
+  opts=opts.filter(o=>!o.if||o.if());if(!opts.some(o=>!o.need||(Array.isArray(o.need[0])?o.need:[o.need]).every(needOk)))opts.push({t:'Идти дальше',s:[]});const b=$('#box');b.hidden=false;b.className='n';$('#name').hidden=true;$('#more').hidden=true;
+  $('#text').textContent='';wait=null;
+  $('#opts').innerHTML=opts.map((o,i)=>{const nd=o.need?(Array.isArray(o.need[0])?o.need:[o.need]):[],ok=nd.every(needOk),lb=nd.map(needLbl).join(' · ');
+    return `<button data-i="${i}" class="${o.fight?'fight':''}${nd.length?' req':''}" ${ok?'':'disabled'}><span class="k">${i+1}</span><span>${T(o.t)}</span>${nd.length?`<span class="tag">${ok?'':'нужно: '}${lb}</span>`:o.tag||o.fight?`<span class="tag">${o.fight?'⚔ бой':o.tag}</span>`:''}</button>`}).join('');
+  $('#opts').onclick=e=>{const x=e.target.closest('button');if(!x)return;e.stopPropagation();sfx('click');$('#opts').innerHTML='';Q=opts[+x.dataset.i].s.concat(Q);next()};
+}
+function needOk(n){const[k,a,b]=n;return k=='sk'?S.pc.sk.includes(a):k=='ab'?S.pc.ab[a]>=b:k=='cls'?a.includes(S.pc.cls):k=='clue'?has(a):k=='f'?!!S.f[a]:k=='rel'?S.rel[a]>=b:k=='g'?S.g[a]==b:k=='fn'?!!a():false}
+function needLbl(n){const[k,a,b,c]=n;return k=='sk'?SK[a][0]:k=='ab'?`${AB[a]} ${b}`:k=='clue'?'улика «'+CL[a][0]+'»':k=='rel'?`${CH[a].n}: доверие ${b}`:k=='g'?c:b}
+function advance(){if(wait){const w=wait;if(!typing)wait=null;w()}}
+$('#box').onclick=advance;
+addEventListener('click',e=>{if(e.target.closest('#mid'))advance()});
+addEventListener('keydown',e=>{
+  if(/INPUT|TEXTAREA/.test(e.target.tagName))return;
+  if(e.code=='Escape'){if(!$('#menu').hidden)closeMenu();else if(S)menu('pause');return}
+  if(!$('#menu').hidden)return;
+  if(e.code=='Space'||e.code=='Enter'){if(e.target.tagName=='BUTTON')return;e.preventDefault();const d=$('#go:not([hidden])')||$('#die:not(:disabled)');d?d.click():advance();return}
+  let i=/^Digit[1-9]$/.test(e.code)?e.code[5]-1:e.code=='KeyE'?99:-1;if(i<0)return;
+  const b=($('#ov').hidden?$('#opts'):$('#ov')).querySelector(`[data-i="${i}"]`);b&&!b.disabled&&b.click()});
+function roll(key,dc,ok,fail){
+  const ov=$('#ov'),bn=bonus(key),ask=ASK;ASK='';$('#box').hidden=true;portrait(null);
+  ov.hidden=false;ov.className='clear';
+  ov.innerHTML=`<div class="dice"><span class="eyebrow">проверка</span><p class="ask">${ask||'Вы пробуете.'}</p>
+   <span class="calc"><b>${bn.name}</b> · сложность <b>${dc}</b><br>ваш бонус <b>${sg(bn.v)}</b> (${bn.parts})</span>
+   <button class="die" id="die">d20</button><p class="msg" id="rr">Нажмите на кубик, чтобы бросить</p><button class="btn" id="go" hidden>Дальше</button></div>`;
+  const die=$('#die');let win=false;
+  die.onclick=()=>{die.disabled=true;sfx('dice');const d=1+rnd(20);win=d+bn.v>=dc;let t=0;die.classList.add('roll');
+    const fin=()=>{die.classList.remove('roll');die.textContent=d;die.classList.add(win?'ok':'no');sfx('land');setTimeout(()=>sfx(win?'ok':'fail'),180);
+      $('#rr').innerHTML=`${d} ${bn.v<0?'−':'+'} ${Math.abs(bn.v)} = <b>${d+bn.v}</b> против ${dc}. ${d==20?'Двадцатка! ':d==1?'Единица. ':''}${win?'Успех':'Провал'}`;$('#go').hidden=false;$('#go').focus()};
+    if(calm)fin();else{const iv=setInterval(()=>{die.textContent=1+rnd(20);if(++t>10){clearInterval(iv);fin()}},75)}};
+  $('#go').onclick=()=>{ov.hidden=true;ov.innerHTML='';Q=(win?ok:fail).concat(Q);next()};
+}
+const holy=(w,extra=[],fn)=>({t:'Прочесть над мёртвым отходную молитву',if:()=>['cleric','paladin'].includes(S.pc.cls),tag:'Религия 10',s:[
+  ['ask','Вы читаете отходную над тем, кто слишком долго не мог уйти.'],['roll','religion',10,
+   [[w,'…Спасибо. Я так давно этого ждал.'],['n','Призрак бледнеет и гаснет, как свеча, которую наконец задули.'],...extra,['do',()=>{peace(w);fn&&fn()}]],
+   [['n','Слова путаются. Призрак смотрит на вас с жалостью и отворачивается.'],['do',()=>S.g[w]='left']]]]});
+
+/* ---------- chalk drawings of my own ---------- */
+function chalk(k){
+  const fig=(x,y,c='#f4efe1',dress)=>`<circle cx="${x}" cy="${y}" r="9" fill="none" stroke="${c}"/><path d="M${x} ${y+9}v26M${x-13} ${y+20}h26M${x} ${y+35}l-10 18M${x} ${y+35}l10 18" stroke="${c}" fill="none"/>${dress?`<path d="M${x} ${y+12}l-13 26h26z" fill="${dress}" stroke="${c}"/>`:''}`;
+  const P={
+   punish:`<rect x="30" y="30" width="70" height="110" fill="none" stroke="#f4efe1"/><path d="M65 30v110" stroke="#f4efe1"/><circle cx="52" cy="72" r="7" fill="none" stroke="#f4efe1"/><path d="M48 76q4 -4 8 0M49 70h1M54 70h1" stroke="#f4efe1" fill="none"/>${fig(160,70)}<path d="M135 40v100M135 140h60" stroke="#f4efe1"/>${fig(250,50)}<path d="M263 70q30 20 14 60" stroke="#b23a2e" stroke-width="5" fill="none"/>`,
+   coven:`<circle cx="160" cy="100" r="22" fill="#b23a2e" stroke="#f4efe1"/>${fig(70,60,'#f4efe1','#222')}${fig(250,60,'#f4efe1','#222')}${fig(160,14,'#f4efe1','#222')}<path d="M152 8l16 12M168 8l-16 12M154 14h12" stroke="#b23a2e"/><path d="M95 80q20 -30 50 -40M225 80q-20 -30 -50 -40" stroke="#f4efe1" fill="none" stroke-dasharray="4 5"/>`,
+   summon:`<circle cx="160" cy="95" r="70" fill="none" stroke="#b23a2e" stroke-width="5"/><path d="M160 60l-22 60h44zM148 62q-18 -14 -10 -32M172 62q18 -14 10 -32M175 118q40 14 34 -26l8 6" stroke="#f4efe1" fill="none"/><circle cx="153" cy="84" r="2.5" fill="#b23a2e"/><circle cx="167" cy="84" r="2.5" fill="#b23a2e"/>`,
+   puppet:`${fig(90,70,'#f4efe1','#3f77b5')}<path d="M80 60l-8 -10M100 60l8 -10M84 56l-6 -12M96 56l6 -12" stroke="#f4efe1"/>${fig(220,70)}<path d="M207 90V4M233 90V4M210 123V4M230 123V4" stroke="#f4efe1" stroke-dasharray="3 4"/><path d="M215 69h4M222 69h4" stroke="#f4efe1"/><path d="M240 40l6 -6l-2 8l8 -2l-6 6" stroke="#f4efe1" fill="none"/>`,
+   heart:`<path d="M160 150C90 100 100 50 135 50c15 0 25 12 25 22c0 -10 10 -22 25 -22c35 0 45 50 -25 100z" fill="#777" stroke="#f4efe1"/><path d="M160 50V10" stroke="#f4efe1" stroke-dasharray="3 4"/><path d="M110 40l100 120M210 40l-100 120" stroke="#b23a2e" stroke-width="6"/>`};
+  return `<svg viewBox="0 0 320 170" stroke-width="3" stroke-linecap="round"><defs><filter id="ch"><feTurbulence baseFrequency=".9" numOctaves="2" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="3"/></filter></defs><g filter="url(#ch)">${P[k]}</g></svg>`;
+}
+
+/* ---------- the house ---------- */
+const FLOORS={
+ 0:{n:'Подвал',areas:`'food storage' 'food altar'`,cols:'1fr 1fr'},
+ 1:{n:'Первый этаж',areas:`'theater theater st kitchen wc' 'play play st dining dining'`,cols:'1fr 1fr .6fr 1fr 1fr'},
+ 2:{n:'Второй этаж',areas:`'class babies st men special' 'library women hall2 director bedroom'`,cols:'1fr 1fr .7fr 1fr 1fr'},
+ 3:{n:'Третий этаж',areas:`'mother st boys' 'girls st oldgirls'`,cols:'1fr .5fr 1fr'}};
+const ghostTalk=w=>S.g[w]?[['n','Здесь тихо. Тот, кто здесь был, больше не показывается.']]:null;
+const ROOMS={
+theater:{n:'Театральная',fl:1,bg:'theater',s:()=>[
+ ['n','Ряды стульев перед закрытым занавесом. Зал полон: куклы, плюшевые звери и двое детей в первом ряду.'],
+ ['n','Дети сидят очень прямо. Они высохли много лет назад.'],
+ ['choice',[
+  {t:'Заглянуть за занавес',s:[['n','С потолка свисают верёвки с петлями на концах. Декорации изнутри обычные: фанерные деревья, домик, трава. Ничего страшного. Только верёвки новые.'],
+   ['ask','Между декорациями что-то есть. Вы всматриваетесь в темноту за сценой.'],['roll','perception',15,[['n','В щели между декорациями кто-то стоял. Вы успели увидеть край чёрного платья и руку в рубцах. Потом там стало пусто.'],['t','Взрослая. Живая. И она за мной наблюдает.'],['do',()=>S.f.shadow=1]],
+   [['sfx','clap'],['n','За спиной раздались аплодисменты. Хлопал весь зал. Когда вы обернулись, куклы сидели неподвижно.']]]]},
+  {t:'Сесть за расстроенное пианино у сцены',need:['sk','performance'],s:[['n','Вы трогаете клавиши. Пианино отвечает колыбельной, которую вы не играли: клавиши опускаются сами. На третьей ноте кукла в первом ряду поворачивает голову.'],['n','Вы доигрываете мелодию до конца. Нота, которую пианино пропускает, всегда одна и та же.'],['do',()=>S.f.knowsong=1],['cons','Вы знаете колыбельную девочек.']]},
+  {t:'Прислушаться к тому, откуда хлопают',need:['sk','arcana'],s:[['sfx','clap'],['n','Звук идёт не из зала, а из воздуха над ним. Малая иллюзия, наложенная без слова и жеста.'],['t','Она колдует молча. Её не услышишь, пока не станет поздно. Но и смех её будет таким же пустым.'],['do',()=>S.f.illusion=1],['cons','Вы знаете, что смех Матушки — только чары.']]},
+  {t:'Тихо прикрыть дверь',s:[['sfx','knock'],['n','Вы закрыли дверь. Изнутри кто-то один раз хлопнул в ладоши.']]}]]]},
+kitchen:{n:'Кухня',fl:1,bg:'kitchen',s:()=>[
+ ['n','Обычная кухня: очаг, котлы, ножи на крюках.'],
+ ['ask','Вы осматриваете очаг, котлы и полки: что здесь готовили и когда?'],['roll','investigation',10,[['n','Зола в очаге тёплая. В котле вываривали несъедобное: кору, волос, мелкие кости. На полке вместо специй порошки и травы, от которых щиплет глаза.']],
+  [['n','Вы тронули золу: тёплая. Здесь недавно готовили. Что именно, вы понять не смогли.']]],
+ ['clue','kitchen'],
+ ['item','it_magic','Зелье лечения','Среди склянок одна знакомая: красная, под сургучом. Такие варят лекари.'],['do',()=>gain('potion')],
+ ['choice',[
+  {t:'Разобрать травы на полке',need:['sk','nature'],s:[['n','Сонная одурь, мак, болотный багульник. И груша, сушёная, для запаха. Этим поят детей.'],['n','В соседней банке полынь. Крепкий отвар полыни снимает такой сон.'],['do',()=>S.f.antidote=1],['cons','У вас есть средство против сонного зелья.']]},
+  {t:'Понять, чем здесь поят детей',need:['sk','medicine'],s:[['n','Пропорции записаны мелом прямо на стене у очага: «малым по ложке, большим по две». Сонное питьё. Рядом, для себя, хозяйка держит полынь: чтобы самой не уснуть от паров.'],['do',()=>S.f.antidote=1],['cons','У вас есть средство против сонного зелья.']]},
+  {t:'Передохнуть у тёплого очага',s:[['do',()=>hp(6)],['n','Вы посидели у очага, пока не перестали дрожать руки. Очаг грел. Дом ждал.']]},{t:'Идти дальше',s:[]}]]]},
+play:{n:'Игровая',fl:1,bg:'play',s:()=>[
+ ['n','Ковёр, сломанная лошадка, сундук без крышки.'],
+ ['draw','draw_girls','чаепитие, рыцари, догонялки','Рисунки по всей стене. Две девочки играют: кукольное чаепитие, рыцари на мечах, догонялки.'],
+ ['n','В углу, ниже остальных, нарисованы шкафы. Из щелей смотрят грустные лица.'],
+ ['t','Мел не осыпался. Это рисовали на днях. Не все дети в этом доме мертвы.'],['clue','drawings'],
+ ['choice',[
+  {t:'Пойти по следу меловой пыли',need:['sk','investigation'],s:[['n','Пыль тянется дорожкой из игровой к лестнице и выше, на третий этаж. Мелкими шагами, вприпрыжку.'],['t','Ребёнок рисует здесь и уходит наверх. Каждый день.'],['do',()=>S.f.trail=1]]},
+  {t:'Заглянуть в сундук',s:[['n','Кубики, деревянная лошадка без головы, мячик. На дне детский рисунок: две девочки держат за руки высокую женщину. Лицо женщины зачирикано так, что прорван лист.']]},
+  {t:'Уйти',s:[]}]]]},
+dining:{n:'Столовая',fl:1,bg:'dining',s:()=>[
+ ['n','Взрослый стол подозрительно чист. За детским столиком накрыто на троих: тарелки, ложки, куличики из грязи, украшенные листьями.'],
+ ['n','Трое детей сидят над тарелками. Над ними гудят мухи.'],
+ ['ask','Вы осматриваете тела детей за столиком и пытаетесь понять, отчего они умерли.'],['roll','medicine',13,[['n','Вы осмотрели тела. Ни раны, ни синяка. В ушах и под носом засохшая кровь: у них что-то лопнуло внутри головы. Так не убивает ни нож, ни яд.'],['clue','bodies']],
+  [['n','На телах ни одной раны. Отчего они умерли, вы не поняли.']]],
+ ['choice',[
+  {t:'Прочесть над ними молитву',need:['sk','religion'],s:[['n','Вы читаете над тремя детьми короткую молитву. Мухи поднимаются и улетают в разбитое окно.'],['do',()=>{S.att=Math.max(0,S.att-1);S.f.blessed=1}],['cons','Вы помолились над мёртвыми детьми в столовой.']]},
+  {t:'Уйти',s:[]}]],
+ ['sfx','knock'],['n','Когда вы повернулись к двери, за спиной трижды стукнула ложка о тарелку.']]},
+wc:{n:'Уборная',fl:1,bg:'wc',s:()=>ghostTalk('dorothy')||[
+ ['n','Запах отхожего места и стоячей воды. В двух ваннах зелёная вода, в ней что-то живо шевелится.'],
+ ['n','У стены на табурете сидит тучная женщина в белом переднике. Сквозь неё виден кафель.','dorothy'],
+ ['dorothy','Выйдите. Я хочу побыть одна. Дайте человеку хоть после смерти побыть одной.'],
+ ['choice',[
+  holy('dorothy'),
+  {t:'«Вас убили взглядом? Как тех детей в столовой?»',need:['clue','bodies'],s:[['dorothy','…Значит, и их она так. Я думала, хоть их пожалела.'],['dorothy','Да. Взглядом. Не смотри ей в глаза, когда она улыбается, дружок. Смотри на руки.'],['do',()=>{peace('dorothy');S.f.eyes=1}],['cons','Дороти научила вас не смотреть Матушке в глаза.']]},
+  {t:'«Простите, хозяйка. Один вопрос, и я уйду»',s:[['dorothy','Вежливый. Давно тут вежливых не было. Спрашивай.'],
+   ['choice',[
+    {t:'«Кто вас убил?»',s:[['dorothy','Любовь Марковна. Посмотрела на меня через кухню, улыбнулась, и у меня в голове будто нитка лопнула.'],['dorothy','Она и сейчас смотрит. Она всегда смотрит.'],['do',()=>S.f.shadow=1]]},
+    {t:'«Что стало с детьми?»',s:[['dorothy','Я им кашу варила. Потом мне велели варить другое. Я варила.'],['dorothy','Не спрашивай меня про детей.']]}]],
+   ['dorothy','Иди. И не пей в этом доме ничего, что пахнет фруктами.'],['do',()=>peace('dorothy')]]},
+  {t:'Подойти и посмотреть, что в ваннах',fight:1,s:[['cons','Дороти Мартин не простит вам этого.'],['n','Головастики. Тысячи головастиков.'],['dorothy','Я сказала: ВЫЙДИТЕ!'],
+   ['fight','dorothy',[['n','Женщина осела на кафель и стекла в щели между плитками.'],['do',()=>S.g.dorothy='gone']]]]},
+  {t:'Молча выйти',s:[['do',()=>S.g.dorothy='left'],['n','Вы закрыли дверь. За ней кто-то тяжело вздохнул.']]}]]]},
+hall2:{n:'Коридор',fl:2,bg:'hall',s:()=>[
+ ['n','В углу рассыпан сухой горох. На нём две пары вмятин, по размеру детских коленей.'],
+ ['draw','svg:punish','шкаф · угол · ремень','На стенах мелом: ребёнок в шкафу, ребёнок в углу, рука с ремнём.'],
+ ['n','На дальней двери табличка: «Директор. Оливия Лоялти».'],
+ ['choice',[
+  {t:'Встать коленями на горох',s:[['n','Больно сразу, и потом только сильнее.'],['if',()=>has('self'),[['t','Я знаю эту боль. Колени помнят раньше головы.'],['do',()=>S.f.memory=1],['cons','Вы вспомнили горох. И шкаф за ним.']],[['t','Сколько они так стояли? Час? Ночь?']]]]},
+  {t:'Идти дальше',s:[]}]]]},
+babies:{n:'Малыши',fl:2,bg:'dorm',s:()=>[
+ ['n','Окно разбито и распахнуто, в комнате свежо. В кроватках спят младенцы. Семеро. Вы пересчитали дважды.'],
+ ['t','Все здесь. Все дышат.'],
+ ['ask','Вы пробуете разбудить младенцев и понять, почему они спят так крепко.'],['roll','medicine',12,[['n','Они не просыпаются ни от голоса, ни от прикосновения. От губ пахнет сладким и травяным. Их опоили, и недавно: кто-то поит их каждый день.']],
+  [['n','Они спят слишком крепко. Вы не смогли разбудить ни одного.']]],
+ ['clue','babies'],['do',()=>S.f.babies=1],
+ ['choice',[
+  {t:'Дать самому маленькому отвар полыни',need:['f','antidote','Средство против сонного зелья'],s:[['n','Вы смачиваете ему губы. Через минуту он чихает и открывает глаза. Смотрит на вас и не плачет.'],['t','Получается. Их можно разбудить.'],['do',()=>{S.f.woke=1;S.att+=1}],['cons','Один младенец проснулся. Карга почувствует это.']]},
+  {t:'Выносить их сейчас же',fight:1,s:[['go','flee']]},
+  {t:'Сначала найти того, кто их сюда принёс',s:[['t','Семерых за раз не унести. А тот, кто их поит, вернётся раньше, чем я дойду до деревни. Сначала хозяин дома.']]}]]]},
+women:{n:'Комната воспитательниц',fl:2,bg:'room',s:()=>[
+ ['n','Комната на двоих. Обе кровати продавлены. У окна куча мелких костей: птичьих, беличьих, кошачьих.'],
+ ['draw','svg:coven','три женщины и красный камень','На стене три женщины танцуют вокруг красного камня. У одной лицо исчёркано.'],
+ ['ask','Три женщины вокруг красного камня. Вы пытаетесь вспомнить, где уже видели такой рисунок.'],['roll','history',16,[['n','Вы видели такое в старой книге о ведьмах. Это шабаш: три карги и жертвенный камень. Втроём они много сильнее, чем по отдельности.'],['t','Но взрослая здесь нарисована одна. Две другие маленькие.'],['clue','coven']],
+  [['t','Три женщины. Одна в шрамах. Рисовал ребёнок, и рисовал с радостью.']]],
+ ['choice',[
+  {t:'Перебрать кости',need:['sk','survival'],s:[['n','Кости чистые, вываренные. На многих следы иглы: из них что-то шили.'],['t','Куклы. Девочкам собирали материал на игрушки.']]},
+  {t:'Заглянуть под кровати',s:[['n','Под одной кроватью стоптанные туфли полной женщины и банка с леденцами. Под другой ничего. Совсем ничего, даже пыли. Здесь мыли пол недавно.']]},
+  {t:'Уйти',s:[]}]]]},
+men:{n:'Комната воспитателей',fl:2,bg:'room',s:()=>S.g.demid?ghostTalk('demid'):[
+ ['n','Посреди комнаты на балке висит рослый бородатый мужчина в рабочей одежде. Висит давно.'],
+ ['item','p_grazzt','«Папа»','На стене углём нарисовано лицо: чёрная кожа, корона из шипов. Подписано детской рукой.'],
+ ['ask','Чёрная кожа, корона из шипов. Вы пытаетесь вспомнить, чьё это лицо.'],['roll','religion',16,[['n','Вы знаете это лицо по храмовым фрескам, там его рисуют в самом низу. Граз’зт, князь демонов, повелитель наслаждений.'],['clue','papa']],
+  [['t','Чей это отец? Точно не того, кто на балке.']]],
+ ['n','В раме картины на восточной стене проделана дыра. Через неё виден кабинет директора. Удобное место, чтобы смотреть и оставаться невидимым.'],
+ ['n','Рядом с телом в воздухе стоит он же. Смотрит на собственные сапоги.','demid'],
+ ['if',()=>F('mask'),[['demid','Маска. Ты из тех. Из гостей.'],['fight','demid',[['n','Он рассыпался, как зола. Маска у вас за поясом стала теплее.'],['do',()=>S.g.demid='gone']]]],[
+ ['choice',[
+  holy('demid',[['n','Перед тем как исчезнуть, он показал пальцем в пол, а потом на стену за шкафами.']],()=>S.f.altar=1),
+  {t:'«Вы чинили шкафы, в которых их запирали»',need:['clue','closets'],s:[['n','Призрак поднимает голову. Впервые смотрит на вас.','demid'],['demid','Чинил. Ставил замки снаружи. Говорил себе: это просто работа.'],['demid','Внизу, за последним шкафом, стена пустая. Я сам её клал. Там они позвали его. Иди с огнём. И прости меня, если сможешь. Они не простят.'],['do',()=>{peace('demid');S.f.altar=1}],['cons','Демид рассказал вам про стену. И попросил прощения.']]},
+  {t:'Перерезать верёвку и уложить тело',s:[['n','Вы уложили тело на кровать и закрыли ему глаза. Призрак смотрел, как вы это делаете.'],
+   ['demid','Я чинил шкафы. Они ломали дверцы изнутри, а я чинил. И замки ставил.'],['demid','Внизу, за шкафами, стена пустая. Я сам её клал. Иди туда с огнём.'],
+   ['do',()=>{peace('demid');S.f.altar=1}]]},
+  {t:'«Почему ты это сделал?»',s:[['demid','Потому что слышал их через пол. Каждую ночь. И ни разу не спустился.'],['n','Он отвернулся к стене и больше не отвечал.'],['do',()=>S.g.demid='left']]},
+  {t:'Обыскать его сундук',fight:1,s:[['demid','Не трожь.'],['fight','demid',[['n','В сундуке лежали молоток, гвозди и дверные замки. Много замков.'],['do',()=>S.g.demid='gone']]]]}]]]]]},
+special:{n:'Гостевая',fl:2,bg:'red',s:()=>[
+ ['n','Светильники вдоль стен, узорные обои, барельефы зверей с человеческими улыбками. Пахнет фруктовыми духами.'],
+ ['n','Это единственная комната в доме, где уютно. От этого здесь хуже, чем в остальных. Сюда приходили гости, которые платили.'],
+ ['item','it_mask','Алебастровая маска','Белая звериная морда с улыбкой шире лица. Лежит на покрывале, будто хозяин вышел на минуту.'],['clue','mask'],
+ ['choice',[
+  {t:'Забрать маску',s:[['do',()=>{S.f.mask=1;gain('mask');S.att++}],['w','Тебе идёт.'],['cons','У вас маска гостя. В этом доме её узнают.']]},
+  {t:'Не прикасаться',s:[['t','Кто-то надевал её, прежде чем войти к детям.']]}]]]},
+director:{n:'Кабинет директора',fl:2,bg:'room',s:()=>S.g.olivia?ghostTalk('olivia'):[
+ ['n','Былая роскошь под слоем пыли. В кресле сидит мёртвая женщина в красном платье и украшениях.'],
+ ['n','На стене две картины. На первой приют, каким он был: белые стены, клумбы, дети на крыльце.'],
+ ['n','На второй пятеро взрослых и два десятка детей. Бородач в тёмном. Юноша в очках. Дама в красном. Полная женщина в переднике. И пятая: немолодая, в чёрном платье, красивая той красотой, от которой отводят глаза.'],
+ ['clue','staff'],
+ ['n','Над креслом встаёт та же дама в красном. Вместо лица у неё голый череп.','olivia'],
+ ['olivia','Вы опоздали. Сюда все опаздывают. Что вам нужно в моём доме?'],
+ ['choice',[
+  holy('olivia',[['n','Портрет на стене качнулся. За ним оказалась дверь.']],()=>{S.f.bedroom=1;S.f.tip=1}),
+  {t:'«Вы с ней дрались. Дети нарисовали это на доске»',need:['clue','board'],s:[['olivia','Нарисовали. Конечно. Они всё рисуют.'],['olivia','Я разбила о её лицо зеркало. Своё, в серебряной раме. Она с тех пор не может смотреть в них. Найдите зеркало, и она ваша.'],['do',()=>{peace('olivia');S.f.bedroom=1;S.f.tip=1}],['cons','Оливия рассказала, как изуродовала Матушку. Зеркало теперь оружие.']]},
+  {t:'«Говорят, когда-то здесь спасали сирот»',s:[['olivia','Спасали. Я сама учила их читать. Потом кончились деньги, и пришла она со своими предложениями. Сначала с маленькими.'],
+   ['olivia','Я проиграла ей всё, кроме этого кресла. Убейте её. Она не выносит собственного лица: об этом я позаботилась.'],
+   ['olivia','За портретом дверь в мою спальню. Возьмите там всё, что сочтёте нужным.'],['do',()=>{peace('olivia');S.f.bedroom=1;S.f.tip=1}]]},
+  {t:'«Вы продавали детей. Я видел книгу»',if:()=>has('ledger'),tag:'Запугивание 12',s:[['ask','Вы бросаете мёртвой директрисе в лицо то, что прочли в её книге. Выдержит ли она ваш взгляд?'],['roll','intimidation',12,
+   [['olivia','…Да. Я. Своей рукой писала «усыновлён».'],['n','Череп не может плакать. Она очень старается.'],['olivia','Она стыдится своих шрамов сильнее, чем я своей книги. Запомните это.'],['do',()=>{peace('olivia');S.f.tip=1;S.f.bedroom=1}]],
+   [['olivia','Вон! Вон из моего дома!'],['fight','olivia',[['n','Красное платье опало на кресло поверх второго такого же.'],['do',()=>S.g.olivia='gone']]]]]]},
+  {t:'Снять с тела украшения',fight:1,s:[['olivia','Руки!'],['fight','olivia',[['item','it_magic','Жемчужина Лоялти','Среди колец и цепочек одна вещь тёплая на ощупь.'],['do',()=>{gain('pearl');S.g.olivia='gone'}]]]]}]],
+ ['if',()=>!F('bedroom'),[['ask','Вы ещё раз обходите кабинет: нет ли здесь чего-то спрятанного?'],['roll','perception',14,[['n','Портрет висит чуть косо. За ним дверь, оклеенная обоями.'],['do',()=>S.f.bedroom=1]],[['n','Вы обошли кабинет ещё раз и ничего больше не нашли.']]]]]]},
+bedroom:{n:'Спальня директора',fl:2,bg:'red',s:()=>[
+ ['if',()=>!F('bedroom'),[['n','Дверь из коридора заперта. Замок старый, косяк гнилой.'],
+  ['choice',[
+   {t:'Выбить дверь плечом',tag:'Атлетика 14',s:[['ask','Вы пробуете высадить дверь так, чтобы косяк не затрещал на весь дом.'],['roll','athletics',14,[['n','Вы налегли плечом. Косяк хрустнул почти беззвучно.']],
+    [['n','Дверь поддалась, но треск раскатился по всему дому. Из стены напротив вышло что-то белое.'],['fight','ghost',[]]]]]},
+   {t:'Вскрыть замок',tag:'Ловкость рук 13',s:[['ask','Вы ковыряете старый замок тем, что нашлось под рукой.'],['roll','sleight',13,[['n','Замок щёлкнул. Дверь открылась сама, будто ждала.']],
+    [['n','Отмычка сломалась, и звон покатился по коридору. Из стены напротив вышло что-то белое.'],['fight','ghost',[]]]]]}]],['do',()=>S.f.bedroom=1]]],
+ ['n','Спальня на одного. Ковры, резная кровать, пустые шкатулки.'],
+ ['ask','Вы обыскиваете спальню директрисы: шкатулки, шкаф, кровать.'],['roll','investigation',13,[['n','У шкафа второе дно. Под ним книга и свёрток.'],['item','it_magic','Клинок Лоялти','Фамильная вещь. Лезвие не потускнело.'],['do',()=>gain('blade')]],
+  [['n','В шкафу вы нашли моль, пыль и тяжёлую книгу, заложенную за заднюю стенку.']]],
+ ['doc','Книга доходов',['Март. Тобиас, 6 лет: усыновлён, 40 зол.','Вечер для гостей в масках: 15 зол.','Порошок из молочных зубов, 2 унции: 8 зол.','Апрель. Мила, 4 года: усыновлена, 55 зол.','Май. От Л. М.: «особый товар», 120 зол. Не спрашивать.'],'Почерк ровный, учительский.'],
+ ['clue','ledger']]},
+class:{n:'Учебная',fl:2,bg:'room',s:()=>[
+ ['n','Парты, счёты, карта мира с дырой на месте столицы. Посреди комнаты двусторонняя доска на оси.'],
+ ['n','На доске мелом пятеро взрослых в ряд, как на парадном портрете. Нарисовано детской рукой, старательно.'],
+ ['choice',[
+  {t:'Сравнить почерк на доске с рисунками в доме',need:['sk','investigation'],s:[['n','Одна и та же рука. Надежда. Она видела драку матери с директрисой и нарисовала её. С двух сторон доски, чтобы видели все.'],['clue','board']]},
+  {t:'Повернуть доску',s:[['n','На обороте женщина в чёрном, вся в красных штрихах, вцепилась в женщину в богатом платье. Вокруг нарисованы дети. Они улыбаются.'],['clue','board']]},
+  {t:'Уйти',s:[]}]]]},
+library:{n:'Архив',fl:2,bg:'library',s:()=>{
+ const rec=[['doc','Синяя папка',['Вера. Принята в день рождения. Родители: не указаны. Приняла: Любовь Марковна.','Надежда. Годом позже. Родители: не указаны. Приняла: Любовь Марковна.','Примечание: к девочкам посторонних не допускать.'],''],['clue','names'],
+  ['n','Ниже, в списке выпущенных, стоит имя, от которого у вас холодеют руки. Ваше.'],['t','Меня привезли сюда младенцем и забрали в четыре года. Я ничего не помню. Наверное, сам так решил.'],['clue','self']];
+ return S.g.john?ghostTalk('john'):[
+ ['n','Запах старых книг. Впервые в этом доме можно дышать.'],
+ ['n','На ближних полках сказки и буквари. На дальних папки, накладные, списки принятых и выпущенных детей.'],
+ ['n','Между стеллажами на полу сидит юноша в очках. Сквозь него видны корешки.','john'],
+ ['john','Тише, пожалуйста. Здесь читают.'],
+ ['choice',[
+  holy('john',[['n','На полу, где он сидел, осталась раскрытая синяя папка.'],...rec]),
+  {t:'«Помогите мне найти записи о детях»',s:[['john','Третий стеллаж, синие папки. Я вёл их аккуратно. Это единственное, что я делал здесь хорошо.'],...rec,
+   ['john','Вера просила у меня книгу о фамильярах. Я дал. Она сказала спасибо, она всегда говорит спасибо.'],['john','Круг они чертили внизу, за шкафами. То, что пришло, не фамильяр.'],['do',()=>{peace('john');S.f.altar=1;S.f.john_told=1}],['cons','Вы знаете, кто призвал тварь в подвале.']]},
+  {t:'«Лиза писала о вас в дневнике»',need:['clue','diary'],s:[['n','Юноша закрывает лицо руками. Очки проваливаются сквозь пальцы.','john'],['john','Лиза. Она читала лучше всех. Я обещал ей, что её не усыновят.'],['john','Синие папки, третий стеллаж. Возьмите. Пусть хоть кто-то узнает, как их звали.'],...rec,['do',()=>{peace('john');S.f.liza=1}],['cons','Джон Доу вспомнил Лизу.']]},
+  {t:'Искать самому',tag:'Расследование 12',s:[['do',()=>S.g.john='left'],['ask','Вы сами роетесь в папках и ищете записи о детях.'],['roll','investigation',12,rec,[['n','Папки перепутаны, половина листов склеилась. Вы нашли только список персонала: «Любовь Марковна, воспитательница. Рекомендаций нет».']]]]},
+  {t:'«Вы учитель. Вы знали, что здесь творится»',tag:'Запугивание 11',s:[['john','Я закрывал дверь и читал вслух. Погромче.'],['ask','Вы молча смотрите на мёртвого учителя и ждёте, что он скажет сам.'],['roll','intimidation',11,
+   [['n','Вы молчите и смотрите на него. Он снимает очки.'],['john','Синие папки. Там всё. И про девочек тоже.'],...rec,['do',()=>peace('john')]],
+   [['john','Не смотрите на меня так! Я ничего не мог!'],['fight','john',[['n','Очки упали на пол и оказались настоящими.'],['do',()=>S.g.john='gone']]]]]]}]]]}},
+mother:{n:'Комната на третьем',fl:3,bg:'red',s:()=>[
+ ['n','На табличке «Старшие мальчики», но живёт здесь взрослая. Постель застелена. На вешалке чёрное платье с кружевом, выглаженное.'],
+ ['n','Едкий запах, который перебивают фруктовые духи. На столике десятки баночек и три зеркала. Все три разбиты кулаком.'],
+ ['n','Среди баночек сидит тряпичная кукла в чепчике. На подоле вышито имя: «Лиза».'],
+ ['clue','mirrors'],
+ ['menu',[
+  {t:'Взять склянку с лечебным зельем',s:[['do',()=>{gain('potion');S.wrath++;S.att++;S.f.stole=1;S.f.stoleAt=S.count}],['w','Положи. Это моё.'],['cons','Вы украли у хозяйки дома.']]},
+  {t:'Взять осколок зеркала',s:[['do',()=>{S.f.mirror=1;S.f.mirrorAt=S.count;S.wrath++;toast('Осколок зеркала у вас')}],['n','В осколке на миг отразилось не ваше лицо.']]},
+  {t:'Взять куклу Лизы',s:[['do',()=>{S.f.dollgot=1;S.wrath++;S.att++}],['n','Кукла лёгкая и пахнет духами хозяйки. Её держали в руках часто.'],['if',()=>F('dollq'),[['t','Лиза ждёт.']]]]},
+  {t:'Ничего больше не трогать',s:[['t','Та, что здесь живёт, скоро вернётся.'],['do',()=>{}]]}],3]]},
+boys:{n:'Младшие мальчики',fl:3,bg:'dorm',s:()=>[
+ ['n','На кроватях под одеялами спят мальчики. Десять или двенадцать. Одеяла заботливо подоткнуты. По запаху ясно, что они не проснутся.'],
+ ['draw','svg:summon','красный круг','У стены мелом и чем-то бурым: красный круг, в нём рогатое и хвостатое.'],
+ ['ask','Рогатая тварь в красном круге. Вы пытаетесь вспомнить, что это за существо.'],['roll','religion',13,[['n','Булезау. Мелкий демон гнили: рядом с ним гниёт всё живое, и сам он гниёт заживо. Туп и яростен. Бить его надо быстро: чем дольше бой, тем хуже.'],['do',()=>S.f.demon=1]],
+  [['t','Кто-то из детей позвал что-то снизу. И оно пришло.']]],
+ ['clue','summon'],
+ ['choice',[
+  {t:'Осмотреть мальчиков',need:['sk','medicine'],s:[['n','Та же засохшая кровь в ушах, что у детей в столовой. Она убивает всех одинаково: улыбкой и взглядом.'],['clue','bodies']]},
+  {t:'Подоткнуть одеяло крайнему',s:[['n','Вы поправляете одеяло. Под подушкой у мальчика деревянная сабля. Вы оставляете её на месте.']]},
+  {t:'Уйти',s:[]}]]]},
+girls:{n:'Младшие девочки',fl:3,bg:'play',s:()=>[
+ ['if',()=>!F('girls'),[['n','В комнате двое. Живые.'],...MEET()]],
+ ['n','Две кроватки, чисто, на подоконнике засушенные цветы. В сундуке куклы. Половина обычные. Остальные сшиты из беличьих лапок, птичьих крыльев и крысиных хвостов и одеты в платьица.'],
+ ['draw','svg:puppet','девочка в голубом и спящий','У кровати Надежды рисунок: девочка в голубом рядом с человечком на верёвках. Человечек спит.'],
+ ['t','Все её рисунки в доме сбылись. Этот ещё нет.'],['clue','puppet']]},
+oldgirls:{n:'Старшие девочки',fl:3,bg:'dorm',s:()=>[
+ ['n','Кровати, тумбочки, гребни. Стойкий запах. Здесь тоже никто не проснулся.'],
+ ['n','Под одним матрасом лежит тетрадь в клеёнке.'],
+ ['doc','Дневник',['Сегодня опять забрали Лизу. Сказали, усыновили. Ночью, без вещей. Перед этим приезжали гости в белых масках.','Л. М. говорит: кто плачет, того заберут следующим. Вера с ней шепчется. Вера маленькая, а взрослые её боятся.','Если я допишу эту тетрадь, я убегу. Если не допишу, значит, усыновили меня.'],'Тетрадь исписана на треть.'],
+ ['clue','diary'],
+ ['if',()=>F('dollq')||F('liza'),[['t','Лиза. Девочка в простыне. Это её тетрадь.']]],
+ ['choice',[
+  {t:'Дописать за неё последнюю строку',s:[['n','Вы находите огрызок карандаша и пишете: «Лиза убежала». Пусть хоть где-то это будет правдой.'],['do',()=>S.f.lizaline=1]]},
+  {t:'Закрыть тетрадь',s:[]}]]]},
+food:{n:'Кладовая',fl:0,bg:'cellar',s:()=>[
+ ['n','Холод старался сохранить припасы, но время победило. Плесень, мухи, личинки. Запах въедается в кожу.'],
+ ['ask','От запаха гнили темнеет в глазах. Удержится ли ваш желудок?'],['roll','save:con',11,[['n','Вы дышали ртом и обыскали полки. За бочкой нашлась запечатанная склянка с храмовым клеймом.'],['do',()=>gain('holy')]],
+  [['n','Вас вывернуло. Потом ещё раз. Искать здесь вы больше не можете.'],['do',()=>hp(-3)]]]]},
+storage:{n:'Склад',fl:0,bg:'cellar',s:()=>[
+ ['n','Сломанная мебель до потолка: стулья, парты, кроватки. В дальнем конце ровным рядом стоят шкафы. Слишком аккуратно для свалки.'],
+ ['n','Вы открыли один. Дверца изнутри исцарапана: «я так больше не буду я так больше не буду». Ниже другим почерком: «он первый начал». Ещё ниже: «сожгу этот дом».'],
+ ['clue','closets'],
+ ['n','Из соседнего шкафа на вас смотрят. Белая простыня, под ней маленький череп.','kids'],
+ ['if',()=>S.g.kids=='peace',[['kids','Это ты! Ты принёс Лизе куклу.'],['n','Простыня машет вам и показывает на последний шкаф. Из-под него дует.'],['do',()=>S.f.altar=1]],[
+ ['if',()=>F('mask'),[['kids','Маска! Маска пришла!'],['fight','ghost',[['n','Простыня упала на пол пустой. За последним шкафом кладка светлее остальной, из-под неё дует.'],['do',()=>S.f.altar=1]]]],[
+  ['kids','Поиграй с нами в прятки. Кто проиграет, тот остаётся в шкафу.'],
+  ['choice',[
+   {t:'Согласиться и водить',tag:'Внимательность 11',s:[['ask','Вы водите. Четверо мёртвых детей прячутся среди сломанной мебели.'],['roll','perception',11,
+     [['n','Вы нашли всех четверых. Последний прятался за шкафом, у стены, из-под которой дует.'],['kids','Ты хорошо ищешь. Там, за стеной, оно. Оно ест нас, даже мёртвых.'],['do',()=>{peace('kids');S.f.altar=1}]],
+     [['n','Вы искали, пока за спиной не закрылась дверца шкафа. Изнутри. Темно. Тесно. Кто-то дышит рядом.'],['do',()=>hp(-4)],['n','Вы выбили дверцу плечом. Дети смеялись. Из-за последнего шкафа дуло.'],['do',()=>S.f.altar=1]]]]},
+   {t:'«Я пришёл не играть»',s:[['n','Простыня втянулась в щель.'],['if',()=>!F('altar'),[['ask','Вы простукиваете стены подвала.'],['roll','perception',14,[['n','За последним шкафом кладка светлее остальной. Из-под неё дует.'],['do',()=>S.f.altar=1]],[['n','Вы простучали стены и ничего не услышали.']]]]]]}]]]]]]]},
+altar:{n:'За шкафами',fl:0,bg:'altar',lock:()=>!F('altar'),s:()=>F('bulezau')?[['n','Круг погас. Статуи по углам улыбаются по-прежнему.']]:[
+ ['n','За дверью пахнет серой. По углам статуи зверолюдей с блаженными лицами. Над алтарём портрет: мужчина с обсидиановой кожей и томным взглядом, в короне из костяных шипов.'],
+ ['ask','Портрет над алтарём. Вы пытаетесь вспомнить, кого здесь почитали.'],['roll','religion',12,[['n','Граз’зт. Князь демонов, повелитель наслаждений. Ему молятся те, кто хочет всего и сразу.'],['clue','papa']],[['t','Это лицо я уже видел наверху.']]],
+ ['clue','cult'],
+ ['if',()=>F('candle'),[['n','Огарок из детского тайника горит ровно. Тварь в круге щурится на свет и пятится.'],['do',()=>S.f.demon=1]]],
+ ['n','На полу красный круг. В круге зверь в язвах, с рогами и длинным шипастым хвостом. Он гниёт заживо и рад вас видеть.'],
+ ['fight','bulezau',[['n','Тварь рухнула в собственный круг и растеклась. Круг погас.'],['do',()=>S.f.bulezau=1],
+  ['choice',[{t:'Взять с алтаря кинжал с красным камнем',s:[['do',()=>gain('dagger')],['n','Рукоять тёплая и чуть липкая. Кинжал хочет работать.']]},{t:'Оставить кинжал',s:[]}]]]]]}
+};
+const peaceN=()=>Object.values(S.g).filter(v=>v=='peace').length;
+const TRUTH=['names','coven','papa','cult','ledger','board','self','diary','staff','summon','bodies','puppet'];
+const tier=()=>{const n=TRUTH.filter(has).length;return n>=8&&has('names')&&has('coven')?3:n>=5&&(has('names')||has('coven'))?2:n>=3?1:0};
+const MEET=()=>[
+ ['n','Одна постарше, в тёмном беретике, с лицом фарфоровой куклы. Вторая младше, растрёпанная, с красными полосами на щеках. В руке у неё мел.','vera'],
+ ['vera','Здравствуйте, {adr}. Мы слышали, как вы ходите. Вы пришли нас спасти?'],
+ ['vera','Я Вера. Это моя сестра Надежда. Она не говорит: у неё нет языка. Зато она рисует.'],
+ ['nd','Надежда приседает и быстро рисует на полу человечка, очень похожего на вас. Потом пририсовывает ему улыбку. Слишком широкую.'],
+ ['if',()=>F('mask'),[['n','Вера замечает маску у вас за поясом. На миг её лицо становится очень взрослым.'],['vera','Вы были в гостевой. Туда нельзя.'],['do',()=>rel('vera',-1)]]],
+ ['menu',[
+  {t:'«Кто ещё живёт в доме?»',s:[['vera','Директор. Он запирает нас в шкафу и не даёт есть. Он очень страшный.'],
+   ['if',()=>has('staff'),[['t','Директором была женщина. Я видел её в кресле, и она давно мертва.'],['do',()=>S.f.sus=1]],
+    [['ask','Вера отвечает слишком гладко. Вы следите за её лицом и за сестрой.'],['roll','insight',13,[['n','Вера сказала «он» и на полмига глянула на сестру. Надежда смотрела в пустую стену и чуть заметно кивала кому-то.'],['do',()=>S.f.sus=1]],[['n','Вера смотрит на вас большими честными глазами.']]]]]]},
+  {t:'«Вы обе врёте. Я это вижу»',need:['sk','insight'],s:[['n','Вера не моргает. Надежда перестаёт рисовать.','vera'],['vera','Все взрослые так говорят. А потом уходят и не возвращаются.'],['vera','Мы просто боимся. Вы бы тоже боялись.'],['t','Не боятся. Ждут.'],['do',()=>{S.f.sus=1;rel('vera',-1)}],['cons','Вера знает, что вы ей не верите.']]},
+  {t:'«Ваш папа случайно не носит корону из шипов?»',need:['clue','papa'],s:[['n','Улыбка Веры становится шире, настоящей.','vera'],['vera','Вы видели его портрет? Правда, он красивый? Мама говорит, он придёт, когда мы вырастем.'],['nd','Надежда кивает часто-часто и рисует корону.'],['do',()=>{S.f.sus=1;rel('vera',1)}],['cons','Вера разговорилась о «папе». Ей нравится, когда о нём спрашивают.']]},
+  {t:'«В вас обеих есть что-то нечистое»',need:['cls',['cleric','paladin'],'Жрец или паладин'],s:[['n','Вера шипит. По-настоящему, как кошка. Потом спохватывается и улыбается.','vera'],['nd','Надежда прячется за сестру и смотрит на ваш священный символ, не мигая.'],['do',()=>{S.f.sus=1;rel('vera',-1);rel('nadya',-1);S.att+=1}],['cons','Матушка узнает, что в доме святой человек.']]},
+  {t:'«Какие у тебя красивые рисунки, Надежда»',need:['ab','cha',13],s:[['nd','Надежда краснеет до ушей. Потом пририсовывает человечку на полу корону и цветок.'],['vera','Ей никто такого не говорил.'],['do',()=>rel('nadya',2)]]},
+  {t:'«Вы голодны? У меня есть хлеб»',s:[['nd','Надежда хватает хлеб обеими руками, нюхает и прячет в карман, не откусив.'],['vera','Спасибо. Мы потом.'],['do',()=>{rel('nadya',1);rel('vera',1)}]]},
+  {t:'«Почему вы не ушли отсюда?»',s:[['vera','Куда? Нас никто не ждёт. А здесь папа нас найдёт, когда придёт.'],['if',()=>has('papa'),[['t','«Папа». Я знаю, кого в этом доме так зовут.'],['do',()=>S.f.sus=1]]]]},
+  {t:'Присесть и посмотреть рисунок Надежды',s:[['nd','Надежда замирает. Потом дорисовывает человечку руки, длинные, до пола, и протягивает вам мел.'],
+   ['choice',[{t:'Нарисовать рядом двух девочек',s:[['nd','Она долго смотрит. Потом пририсовывает третью фигуру, высокую, и тут же стирает ладонью.'],['do',()=>rel('nadya',2)]]},{t:'Вернуть мел',s:[['do',()=>rel('nadya',-1)]]}]]]},
+  {t:'«Говорите правду. Сейчас же»',need:['sk','intimidation'],s:[['n','Вы нависаете над ними. Надежда роняет мел. Вера отступает на шаг и зовёт, не повышая голоса:','vera'],['vera','Мама.'],['n','В доме становится очень тихо. Потом где-то наверху скрипит половица.'],['do',()=>{rel('vera',-2);rel('nadya',-2);S.att+=2;S.f.sus=1}],['cons','Вы напугали девочек. Мать это слышала.']]}],3],
+ ['n','Пока вы говорите с Верой, Надежда рисует на стене. Быстро и с удовольствием.'],
+ ['draw','draw_boy','он танцует','Мальчик танцует. Руки и ноги у него в стороны, как у подвешенного.'],
+ ['vera','Это она просто так. Она любит, когда танцуют.'],
+ ['do',()=>S.f.girls=1],
+ ['if',()=>!F('bulezau'),[
+  ['vera','В подвале живёт чудовище, {adr}. За шкафами есть дверь. Оно скребётся. Оно съест малышей. Убейте его, пожалуйста. Вы же сильный.'],
+  ['choice',[
+   {t:'«Покажите, где дверь»',s:[['vera','Вы самый добрый человек на свете.'],['do',()=>rel('vera',1)]]},
+   {t:'«Откуда в подвале чудовище?»',tag:'Проницательность 12',s:[['vera','Оно само пришло.'],['ask','Вы краем глаза следите за Надеждой и её рисунком.'],['roll','insight',12,[['nd','Надежда перестаёт рисовать и быстро стирает что-то рукавом.'],['t','Она стёрла красный круг.'],['do',()=>S.f.sus=1]],[['n','Надежда рисует дальше.']]]]},
+   {t:'«Вы его и позвали. Вера хотела фамильяра»',need:['f','john_told','Джон рассказал про книгу'],s:[['n','Вера впервые не находит, что ответить.','vera'],['vera','…Маме не говорите. Пожалуйста. Она думает, это гость пришёл сам.'],['do',()=>{rel('vera',1);S.f.veraSecret=1}],['cons','У вас есть тайна Веры. Это пригодится.']]},
+   {t:'«Сначала правду. Кто вас кормит?»',s:[['vera','Мы сами. Мы самостоятельные.'],['n','Улыбка у неё не изменилась ни на волос. От этого не по себе.'],['do',()=>{rel('vera',-1);S.f.sus=1}]]}]],
+  ['do',()=>{S.f.altar=1;toast('Подвал: дверь за шкафами открыта')}]]]];
+
+/* ---------- events between rooms ---------- */
+const EVENTS=[
+{id:'cry',if:()=>F('babies')&&S.att>=3,s:()=>[['bg','hall','Коридор'],['sfx','cry'],['n','Один из малышей проснулся и плачет. Плач идёт через весь дом, по стенам, по трубам.'],
+ ['choice',[
+  {t:'Подняться и укачать его',need:['sk','medicine'],s:[['n','Вы смочили ему губы водой и держали, пока он не уснул. Обычным сном, без зелья.'],['do',()=>{S.att=Math.max(0,S.att-1);S.f.soothed=1}],['cons','Одного младенца вы успокоили сами. Он запомнит ваши руки, а не её.']]},
+  {t:'Подняться и попробовать успокоить',tag:'Медицина 11',s:[['ask','Вы берёте младенца на руки и пытаетесь его успокоить, не разбудив остальных.'],['roll','medicine',11,[['n','Он затих у вас на плече.'],['do',()=>S.f.soothed=1]],[['n','Он плачет громче. Проснулся второй. Вы слышите шаги этажом выше.'],['do',()=>S.att+=1]]]]},
+  {t:'Не отвлекаться',s:[['n','Плач оборвался. Сразу, на вдохе.'],['t','Кто-то дал ему ещё зелья. Кто-то, кто был рядом.'],['do',()=>{S.att+=1;S.f.ignored=1}],['cons','Вы не пошли на плач.']]}]]]},
+{id:'doll',if:()=>(has('diary')||S.seen.mother)&&S.g.kids!=='peace'&&!F('mask'),s:()=>[['bg','hall','Коридор'],
+ ['n','Из стены высовывается простыня с маленьким черепом. Голос тонкий, девчачий.','kids'],
+ ['kids','Ты взрослый. Взрослые всё могут. Мама Люба забрала мою куклу. Принеси, а?'],
+ ['choice',[
+  {t:'«Ты Лиза? Ты писала дневник?»',need:['clue','diary'],s:[['kids','Я не дописала.'],['n','Простыня долго молчит.'],['kids','Если найдёшь куклу, я покажу, где у неё дверь в подвал. Она мне тоже показала, только поздно.'],['do',()=>{S.f.dollq=1;S.f.liza=1}],['cons','Вы обещали Лизе найти её куклу.']]},
+  {t:'Отдать куклу, которую вы нашли',need:['f','dollgot','У вас кукла Лизы'],s:[['go','dollgive']]},
+  {t:'«Принесу»',s:[['kids','Обещаешь? Взрослые всегда обещают.'],['do',()=>S.f.dollq=1],['cons','Вы обещали мёртвой девочке найти её куклу.']]},
+  {t:'«Мне некогда»',s:[['n','Простыня уходит в стену. Где-то в доме тоненько плачут.']]}]]]},
+{id:'dollgive',must:1,if:()=>F('dollq')&&F('dollgot'),s:()=>SC.dollgive()},
+{id:'swap',must:1,if:()=>F('stole')&&S.deck.includes('potion')&&S.count>=S.f.stoleAt+2,s:()=>[['bg','hall','Коридор'],
+ ['n','Склянка в сумке тёплая. Утром она была холодной.'],
+ ['choice',[
+  {t:'Понюхать: Дороти говорила про фрукты',need:['g','dorothy','peace','Вы отпустили Дороти'],s:[['n','Пахнет грушей и мёдом. Вы выливаете её на пол, и половица чернеет.'],['do',()=>{const i=S.deck.indexOf('potion');S.deck.splice(i,1)}],['cons','Дороти спасла вам жизнь. Подменённое зелье вылито.']]},
+  {t:'Проверить зелье',tag:'Медицина 13',s:[['ask','Вы рассматриваете склянку на свет и нюхаете пробку.'],['roll','medicine',13,[['n','Сургуч перебит. Внутри уже не лечебное. Вы выливаете его.'],['do',()=>{const i=S.deck.indexOf('potion');S.deck.splice(i,1)}]],[['n','Обычное зелье. Наверное, нагрелось от тела.'],['do',()=>{const i=S.deck.indexOf('potion');S.deck[i]='poison'}]]]]},
+  {t:'Не обращать внимания',s:[['do',()=>{const i=S.deck.indexOf('potion');S.deck[i]='poison'}],['w','Пей на здоровье, воришка.']]}]]]},
+{id:'footsteps',if:()=>S.att>=4&&has('mirrors'),s:()=>[['bg','hall','Коридор'],['mood','dread'],['n','Шаги за спиной. Медленные, на каблуках. Останавливаются, когда останавливаетесь вы.'],
+ ['choice',[
+  {t:'Скользнуть в нишу и посмотреть',need:['sk','stealth'],s:[['n','Мимо проходит женщина в чёрном. Лицо в рубцах, на шее серый камень на шнурке. Она нюхает воздух и уходит.'],['do',()=>{S.att=Math.max(0,S.att-2);S.f.stonehint=1}],['clue','mirrors'],['cons','Вы видели её лицо и камень на её шее.']]},
+  {t:'Спрятаться',tag:'Скрытность 13',s:[['ask','Вы вжимаетесь в тёмный угол и не дышите.'],['roll','stealth',13,[['n','Шаги проходят мимо. Пахнет фруктовыми духами.'],['do',()=>S.att=Math.max(0,S.att-1)]],[['n','Шаги останавливаются рядом. Из стены выходит белое.'],['fight','ghost',[]]]]]},
+  {t:'Резко обернуться',fight:1,s:[['n','Никого. Только из стены уже тянется белая рука.'],['fight','ghost',[]]]}]]]},
+{id:'name',if:()=>has('self')&&S.att>=2,s:()=>[['bg','hall','Коридор'],['w',`${S.pc.name}… Маленький ${S.pc.name}. Ты вернулся домой.`],
+ ['ask','Голос знает ваше детское имя. Он тянет за собой воспоминание, которое вы прятали тридцать лет.'],['roll','save:wis',12,
+  [['n','Вы вспоминаете шкаф. Темноту, запах лака, щель света. Голос за дверцей: «Кто плачет, того заберут». Вы не плакали. Вас не забрали.'],['t','Я выжил тогда, потому что молчал. Сейчас молчать не буду.']],
+  [['n','Вы вспоминаете шкаф, и шкаф вспоминает вас. Вы сидите на полу коридора, не зная, сколько прошло времени.'],['do',()=>hp(-3)]]],
+ ['do',()=>S.f.memory=1],['cons','Вы вспомнили шкаф. Это можно сказать ей в лицо.']]},
+{id:'shard',if:()=>F('mirror')&&S.att>=3,s:()=>[['bg','red','Коридор'],['n','Осколок зеркала в сумке запотел. В нём не ваш коридор: женщина в чёрном снимает с шеи серый камень, гладит его, как живое, и надевает обратно.'],
+ ['ask','Вы пытаетесь понять, что за камень вы видели.'],['roll','arcana',13,[['n','Каменное сердце. Пока оно на карге, она уходит в стены, как в воду, и раны на ней затягиваются. Без него она просто злая старуха.'],['do',()=>S.f.heart=1],['cons','Вы знаете про каменное сердце.']],[['t','Камень на шее. Она бережёт его больше лица. Это важно.'],['do',()=>S.f.stonehint=1]]]]},
+{id:'guest',room:['dining','boys','storage'],if:()=>F('mask')&&S.g.kids!=='peace',s:()=>[['bg','red','Коридор'],['n','Из стены выглядывает мёртвый мальчик. Видит маску у вас за поясом и кланяется до пола.','kids'],['kids','Гость! Мама Люба ждёт. Вам приготовить мальчика или девочку?'],
+ ['choice',[
+  {t:'Подыграть и расспросить',tag:'Обман 12',s:[['ask','Вы держитесь как постоянный гость этого дома.'],['roll','deception',12,[['kids','По вечерам мама вешает в театре новые верёвки. Для гостей, которые не платят.'],['do',()=>S.f.warned=1],['cons','Вы знаете про верёвки в театре.']],[['kids','Ты не гость. У гостей не дрожат руки.'],['n','Мальчик исчезает. Через минуту по дому проходит смешок.'],['do',()=>S.att+=2]]]]},
+  {t:'Бросить маску на пол',s:[['n','Маска раскалывается. Мальчик смотрит на осколки и вдруг улыбается, по-детски, во весь череп.'],['do',()=>{S.f.mask=0;const i=S.deck.indexOf('mask');if(i>=0)S.deck.splice(i,1);S.f.maskBroken=1}],['cons','Вы разбили маску гостя. Мёртвые дети это видели.']]}]]]},
+{id:'spy',if:()=>F('girls')&&S.rel.vera<=0&&S.att>=3,s:()=>[['bg','hall','Лестница'],['n','Скрип на лестнице. Кто-то слушал, пока вы осматривались.'],
+ ['ask','Вы пытаетесь заметить, кто прячется на лестнице.'],['roll','perception',13,
+  [['n','Вера. Сидит на ступеньке и не думает убегать.','vera'],['vera','Мама говорит, вы плохой гость.'],
+   ['choice',[
+    {t:'«Я не враг тебе, Вера»',need:['ab','cha',13],s:[['vera','Все так говорят.'],['n','Но уходит она медленно, оглядываясь.'],['do',()=>rel('vera',2)]]},
+    {t:'«Передай маме, что я иду за ней»',s:[['vera','Передам.'],['do',()=>{S.att+=2;rel('vera',-1)}],['cons','Матушка знает, что вы идёте за ней.']]},
+    {t:'Промолчать',s:[['n','Вера смотрит, пока вам не становится неловко, потом уходит наверх.']]}]]],
+  [['n','Наверху хлопнула дверь. Детский смех.'],['do',()=>S.att+=2],['cons','Вера всё расскажет матери.']]]]},
+{id:'nadya',must:1,if:()=>F('girls')&&S.rel.nadya>=3,s:()=>[['bg','dorm','Ночь'],['mood','girls'],
+ ['n','Вы присели отдохнуть и не услышали, как она подошла. Надежда садится рядом и берёт вашу ладонь.','nadya'],
+ ['nd','Пальцем, испачканным в мелу, она рисует у вас на ладони сердце. Потом зачёркивает. Потом показывает на свою шею и на потолок.'],
+ ['draw','svg:heart','сердце на шнурке','Серое сердце на шнурке. Перечёркнуто дважды.'],
+ ['nd','Потом рисует человечка на верёвках и сердито качает головой. Нет. Не ходи.'],
+ ['do',()=>{S.f.heart=1;S.f.warned=1}],['cons','Надежда предупредила вас. Если мать узнает, ей будет плохо.'],
+ ['nd','Она уходит быстро, не оглядываясь. На ладони остаётся мел.']]},
+{id:'dorothy',must:1,if:()=>S.g.dorothy=='peace'&&F('girls'),s:()=>[['bg','kitchen','Кухня'],
+ ['n','С кухни пахнет кашей. Обычной, пшённой. У котла стоит полная женщина в переднике.','dorothy'],
+ ['dorothy','Девочки готовят тебе представление. Я слышала, как они шепчутся. Не ходи за занавес, дружок.'],
+ ['dorothy','И вот, поешь. Каша настоящая. Последнее, что я тут варю.'],['do',()=>{hp(6);S.f.warned=1}],['cons','Дороти предупредила вас о театре.']]},
+{id:'smoke',if:()=>S.att>=5&&!!S.seen.kitchen,s:()=>[['bg','kitchen','Коридор'],['n','По коридору ползёт сладкий дым. Пахнет грушей и мёдом. Голова становится лёгкой.'],
+ ['choice',[
+  {t:'Дороти опрокидывает котёл',need:['g','dorothy','peace','Вы отпустили Дороти'],s:[['n','На кухне что-то с грохотом падает. Дым редеет. Кто-то ворчит про бестолковых хозяек.']]},
+  {t:'Закрыть лицо и пройти',tag:'Спасбросок Телосложения 13',s:[['ask','Вы задерживаете дыхание и идёте сквозь дым.'],['roll','save:con',13,[['n','Вы прошли. Глаза слезятся, но голова ясная.']],[['n','Вы кашляете и не можете остановиться. В пальцах тяжесть, которая не уходит.'],['do',()=>S.f.drugged=1],['cons','Вы надышались. В бою с хозяйкой руки будут слабее.']]]]}]]]},
+{id:'cold',if:()=>has('self')&&has('closets'),s:()=>[['bg','hall','Коридор'],['sfx','door'],['n','Дверца шкафа в коридоре открывается сама. Изнутри на ней процарапано: «я так больше не буду».'],
+ ['if',()=>has('self'),[['t','Этот почерк. Я знаю этот почерк.']]],
+ ['ask','Из шкафа тянет холодом, который пробирает до костей.'],['roll','save:wis',11,[['n','Вы закрываете дверцу. Она больше не открывается.']],[['n','Холод держит вас за горло, пока вы не отступаете.'],['do',()=>hp(-2)]]]]},
+{id:'offer',must:1,if:()=>F('girls')&&S.rel.vera>=2&&(F('bulezau')||S.count>=11)&&!F('inv'),s:()=>SC.offer()},
+{id:'hunt',must:1,if:()=>S.att>=8,s:()=>[['bg','hall','Коридор'],['mood','dread'],['w','Хватит. Я больше не играю.'],['n','Стены выдыхают холод. Из них выходит белое, и его больше, чем раньше.'],
+ ['fight','ghost',[['do',()=>S.att=5],['w','Следующей приду я.']]]]}
+];
+const EVMETA={
+ cry:['Плач наверху',()=>['Вы нашли младенцев','Матушка насторожилась']],
+ doll:['Девочка в простыне',()=>[has('diary')?'Вы прочли дневник Лизы':'Вы видели куклу в комнате Матушки','На вас нет маски гостя']],
+ dollgive:['Кукла для Лизы',()=>['Вы обещали Лизе найти куклу','Вы забрали куклу из комнаты Матушки']],
+ swap:['Тёплая склянка',()=>['Вы украли зелье из комнаты Матушки']],
+ footsteps:['Шаги за спиной',()=>['Вы рылись в её комнате','Матушка следит за вами']],
+ name:['Детское имя',()=>['Вы нашли своё имя в архиве','Матушка узнала, кто вы']],
+ shard:['Осколок',()=>['Вы забрали осколок её зеркала','Матушка насторожилась']],
+ guest:['Гость',()=>['У вас маска гостя','Вы рядом с мёртвыми детьми']],
+ spy:['Скрип на лестнице',()=>['Вера вам не доверяет','Матушка насторожилась']],
+ nadya:['Мел на ладони',()=>['Надежда вам доверяет']],
+ dorothy:['Последняя каша',()=>['Вы отпустили Дороти Мартин с миром','Вы познакомились с девочками']],
+ smoke:['Сладкий дым',()=>['Вы были на кухне','Матушка знает, где вы']],
+ cold:['Шкаф в коридоре',()=>['Вы нашли своё имя в архиве','Вы видели надписи в подвальных шкафах']],
+ offer:['Предложение Веры',()=>['Вера вам доверяет','Вера видела, на что вы способны']],
+ hunt:['Охота',()=>['Внимание Матушки исчерпано']],
+ rats:['Крысы',()=>['Случай: дом живёт своей жизнью']],
+ musicbox:['Шкатулка',()=>['Надежда к вам расположена','Вы в комнате, где играют девочки']],
+ stairs:['Гнилая ступенька',()=>['Случай: дом живёт своей жизнью']],
+ bg_urchin:['Тайник под половицей',()=>['Предыстория: Беспризорник','Вы в детской спальне']],
+ bg_acolyte:['Знак на косяке',()=>['Предыстория: Прислужник','Здесь служили Граз’зту']],
+ bg_criminal:['Воровская метка',()=>['Предыстория: Преступник','Сюда приходили платные гости']],
+ bg_folk:['Чепчик',()=>['Предыстория: Народный герой','Вы нашли младенцев']],
+ bg_noble:['Письмо с гербом',()=>['Предыстория: Благородный','Вы в покоях Оливии Лоялти']],
+ bg_sage:['Пометки на полях',()=>['Предыстория: Мудрец','Вы среди книг приюта']],
+ bg_soldier:['Баррикада',()=>['Предыстория: Солдат','Вы поднялись на третий этаж']],
+ holyaura:['Мёртвые у порога',()=>[`Класс: ${cls().n}`,'Вы рядом с мёртвыми детьми']],
+ patron:['Голос покровителя',()=>['Класс: Колдун','Здесь чувствуется Граз’зт']],
+ arcane:['Нити чар',()=>[`Класс: ${cls().n}`,'Вы нашли младенцев']],
+ wild:['Звериные кости',()=>[`Класс: ${cls().n}`,'Здесь лежат звериные кости']],
+ song:['Колыбельная',()=>['Класс: Бард','Вы познакомились с девочками']],
+ provoke:['Дом дразнит',()=>[`Класс: ${cls().n}`,'Матушка насторожилась','Вы в комнате с детскими игрушками']],
+ wounded:['Чашка воды',()=>['Вы тяжело ранены',S.rel.nadya>=1?'Надежда к вам расположена':S.g.dorothy=='peace'?'Вы отпустили Дороти Мартин':'Матушка следит за вами']],
+ cursed:['Рисунок с вами',()=>['Надежда вас невзлюбила','Матушка насторожилась']],
+ gift:['Подарок Веры',()=>['Вера вам доверяет']],
+ cold2:['Холод в доме',()=>['Вы развеяли силой двух мёртвых']]
+};
+const EVENTS2=[
+{id:'rats',if:()=>false,s:()=>[['bg','hall','Коридор'],['n','По коридору бегут крысы. Много. Одна тащит в зубах что-то блестящее.'],
+ ['choice',[
+  {t:'Отнять добычу',tag:'Ловкость рук 12',s:[['ask','Вы пытаетесь выхватить блестящее у крысы из зубов.'],['roll','sleight',12,[['n','Пуговица от детской кофточки, перламутровая. И пузырёк с остатками зелья.'],['do',()=>gain('potion')]],[['n','Крыса вцепляется вам в палец и исчезает в щели.'],['do',()=>hp(-2)]]]]},
+  {t:'Пойти за ними',s:[['n','Крысы ныряют под дверь кладовой. Оттуда тянет холодом и чем-то сладким.'],['t','Даже крысы здесь знают, куда идти.'],['do',()=>S.att=Math.max(0,S.att-1)]]},
+  {t:'Пропустить их',s:[['n','Они бегут мимо, не обращая на вас внимания. Будто вас здесь нет.']]}]]]},
+{id:'musicbox',room:['play','theater','girls'],if:()=>F('girls')&&S.rel.nadya>=1&&!F('knowsong'),s:()=>[['bg','play','Коридор'],['mood','girls'],['n','На подоконнике сама собой открылась музыкальная шкатулка. Играет колыбельную. Фигурка балерины крутится, и у неё нет головы.'],
+ ['choice',[
+  {t:'Закрыть шкатулку',s:[['n','Музыка обрывается на середине. Тишина после неё громче.']]},
+  {t:'Дослушать до конца',tag:'Спасбросок Мудрости 12',s:[['ask','Колыбельная тянет в сон. Вы пытаетесь дослушать её и не уснуть.'],['roll','save:wis',12,[['n','Вы запомнили мелодию. Теперь, если её запоют, вы узнаете её с первых нот.'],['do',()=>S.f.knowsong=1],['cons','Вы знаете колыбельную девочек. Она не застанет вас врасплох.']],[['n','Вы очнулись на полу. Шкатулка закрыта. Сколько прошло времени, непонятно.'],['do',()=>{hp(-3);S.att+=1}]]]]}]]]},
+{id:'stairs',if:()=>false,s:()=>[['bg','hall','Лестница'],['n','Ступенька под ногой проседает с мягким хрустом гнилого дерева.'],
+ ['ask','Вы пытаетесь удержаться и не провалиться.'],['roll','save:dex',12,[['n','Вы успеваете перенести вес. Внизу, в дыре, блестят чьи-то молочные зубы.']],[['n','Нога проваливается по колено. Вы выдёргиваете её, оставив в дыре кусок штанины и немного кожи.'],['do',()=>{hp(-3);S.att+=1}]]]]},
+{id:'bg_urchin',room:['oldgirls','boys'],if:()=>S.pc.bg=='urchin',s:()=>[['bg','dorm','Коридор'],['n','Одна половица лежит не так, как другие. Вы знаете этот приём: так прячут, когда больше негде.'],
+ ['n','Под ней узелок. Сухарь, огарок свечи, пуговица, записка печатными буквами: «ЭТО МОЁ НЕ ТРОГАТЬ».'],['t','Я тоже так писал. Кому-то это было очень нужно.'],
+ ['choice',[{t:'Оставить как было',s:[['n','Вы кладёте половицу на место.'],['do',()=>{S.f.kindchild=1}],['cons','Вы не тронули чужой тайник. Мёртвые дети это видели.']]},{t:'Забрать свечу',s:[['n','Огарок пригодится в темноте подвала.'],['do',()=>S.f.candle=1]]}]]]},
+{id:'bg_acolyte',room:['special','men'],if:()=>S.pc.bg=='acolyte',s:()=>[['bg','hall','Коридор'],['n','На дверном косяке процарапан знак. Вы видели такой в храмовых книгах, на странице, которую послушникам не показывают.'],
+ ['t','Знак Граз’зта. Здесь не просто жили. Здесь служили.'],['clue','cult'],['n','Вы знаете и обратный знак, охранный. Чертите его мелом поверх.'],['do',()=>{gain('holy');S.att=Math.max(0,S.att-1)}]]},
+{id:'bg_criminal',room:['special','bedroom'],if:()=>S.pc.bg=='criminal',s:()=>[['bg','red','Коридор'],['n','На притолоке еле заметная метка: два креста и кружок. Воровской язык: «здесь платят, но не спрашивай за что».'],
+ ['t','Сюда возили детей перекупщики. Значит, был и чёрный ход.'],['n','Вы находите его за гобеленом: узкая дверь на улицу, заколоченная снаружи.'],['do',()=>S.f.backdoor=1],['cons','Вы знаете о чёрном ходе. Через него можно уйти незаметно.']]},
+{id:'bg_folk',room:['babies'],if:()=>S.pc.bg=='folk',s:()=>[['bg','dorm','Коридор'],['n','На гвозде висит детский чепчик. Вышивка по краю: рябина и петушки. Так вышивают только в одной деревне. В вашей.'],
+ ['t','Это чепчик младшей Марфиной. Мне говорили, что она пропала в прошлом месяце.'],['n','Злость получается ровной и холодной. Её надолго хватит.'],['do',()=>{hp(5);S.f.resolve=1}],['cons','Вы нашли чепчик из родной деревни. Страх больше не держит вас.']]},
+{id:'bg_noble',room:['director','bedroom'],if:()=>S.pc.bg=='noble',s:()=>[['bg','room','Коридор'],['n','В трещине паркета застряло письмо. Сургуч с гербом Лоялти: три голубя на синем поле.'],
+ ['doc','Письмо матери Оливии',['Дорогая Оливия, мы не можем больше присылать деньги. Твоя новая воспитательница пишет нам сама и предлагает «иные источники». Не отвечай ей. Не принимай от неё ничего. Если она уже в доме, выгони её до зимы.','Твоя мать'],'Письмо не распечатано.'],
+ ['clue','staff'],['do',()=>S.f.tip=1],['cons','Вы знаете, как Матушка вошла в этот дом. Это можно сказать ей в лицо.']]},
+{id:'bg_sage',room:['library','class'],if:()=>S.pc.bg=='sage',s:()=>[['bg','library','Коридор'],['n','В брошенной на подоконнике книге сказок кто-то писал на полях взрослым почерком. Рецепты. Даты. Имена.'],
+ ['n','«Сердце из камня держит её в двух мирах. Отними сердце, и она останется в одном».'],['t','Это писала не карга. Это писала Оливия. Она пыталась.'],['do',()=>S.f.heart=1],['cons','Вы знаете про каменное сердце.']]},
+{id:'bg_soldier',room:['mother','boys','girls','oldgirls'],if:()=>S.pc.bg=='soldier',s:()=>[['bg','hall','Лестница'],['n','Лестница на третий этаж завалена мебелью. Не случайно: баррикада, сложенная с умом. Кто-то когда-то держал здесь оборону.'],
+ ['t','Оливия. Против неё. И проиграла.'],['n','Вы запоминаете, как поставлены столы. Это пригодится, если придётся драться спиной к стене.'],['do',()=>gain('wall')]]},
+{id:'holyaura',room:['dining','boys'],if:()=>['cleric','paladin'].includes(S.pc.cls),s:()=>[['bg','hall','Коридор'],['n','Вы оборачиваетесь и видите: за вами, в трёх шагах, идут мёртвые дети. Пятеро. Простыни волочатся по полу.','kids'],
+ ['kids','От тебя тепло. Можно мы рядом постоим?'],
+ ['choice',[
+  {t:'Прочесть над ними молитву',s:[['n','Вы читаете короткую, детскую, ту, которую знают все. Двое исчезают на полуслове. Трое остаются.'],['kids','А нам ещё нельзя. Мы ждём, пока она уйдёт.'],['do',()=>{S.att=Math.max(0,S.att-2);if(!S.g.kids)peace('kids');S.f.altar=1}],['n','Уходя, последний показывает рукой вниз: в подвал, за шкафы.']]},
+  {t:'«Идите, пока можете»',s:[['n','Они не уходят. Просто стоят и греются.']]}]]]},
+{id:'patron',room:['men','special','altar'],if:()=>S.pc.cls=='warlock',s:()=>[['bg','altar','Коридор'],['mood','dread'],['n','Ваша тень на стене поворачивает голову раньше вас.'],['w','Здесь пахнет моим соседом. Хочешь, я дам тебе его огня?'],
+ ['choice',[
+  {t:'Принять дар',s:[['n','В ладони вспыхивает жар. Он ваш, но не совсем.'],['do',()=>{gain('orb');gain('hadar');S.att+=2}],['cons','Покровитель дал вам огня. Карга чует это за три стены.']]},
+  {t:'Отказаться',s:[['w','Как хочешь. Я подожду.'],['n','Тень снова стала просто тенью.']]}]]]},
+{id:'arcane',room:['babies'],if:()=>['wizard','sorcerer'].includes(S.pc.cls),s:()=>[['bg','dorm','Коридор'],['n','Вы видите их краем зрения: тонкие розовые нити тянутся из детской по коридору, по лестнице, на третий этаж.'],
+ ['t','Чары очарования. Она держит их всех на одной нитке. Значит, нитку можно оборвать.'],
+ ['ask','Вы пытаетесь распутать нить, не дёрнув её.'],['roll','arcana',13,[['n','Нить истончается и рвётся без звука. Наверху кто-то глухо охает.'],['do',()=>S.f.untied=1],['cons','Вы оборвали её чары на младенцах. Они проснутся сами.']],[['n','Нить дёргается, как живая. Где-то наверху злой женский смешок.'],['do',()=>S.att+=2]]]]},
+{id:'wild',room:['women','food'],if:()=>['druid','ranger','barbarian'].includes(S.pc.cls),s:()=>[['bg','cellar','Коридор'],['n','В углу кучка звериных косточек. Беличьи, птичьи. Вы слышите, как они просят. Не словами.'],
+ ['choice',[
+  {t:'Похоронить их под окном',s:[['n','Вы выносите кости к разбитому окну и засыпаете землёй из цветочного горшка. Ветер пахнет лесом.'],['do',()=>{hp(6);S.f.beasts=1}],['cons','Звери этого дома вам благодарны.']]},
+  {t:'Не сейчас',s:[]}]]]},
+{id:'song',room:['theater','girls','play'],if:()=>S.pc.cls=='bard'&&F('girls'),s:()=>[['bg','play','Коридор'],['mood','girls'],['n','Из-за стены доносится колыбельная. Тихо, на два голоса, один из которых без слов. Мелодия простая, но в ней что-то не так: одна нота лишняя.'],
+ ['t','Это не колыбельная. Это заклинание сна, положенное на музыку. И я могу спеть его наоборот.'],['do',()=>S.f.knowsong=1],['cons','Вы сможете перепеть колыбельную девочек.']]},
+{id:'provoke',room:['play','theater'],if:()=>['fighter','barbarian','paladin'].includes(S.pc.cls)&&S.att>=3,s:()=>[['bg','hall','Коридор'],['n','По коридору катится детский мяч и останавливается у ваших ног. Потом ещё один. Потом из стены смеются.'],['w','Ну же. Ударь. Ты же любишь бить.'],
+ ['choice',[
+  {t:'Пнуть мяч в стену',s:[['n','Мяч проходит сквозь стену. Смех становится громче и уходит наверх.'],['do',()=>S.att+=2]]},
+  {t:'Сдержаться',tag:'Спасбросок Мудрости 11',s:[['ask','Вы стоите неподвижно, пока смех не кончится.'],['roll','save:wis',11,[['n','Смех обрывается разочарованно.'],['do',()=>S.att=Math.max(0,S.att-1)]],[['n','Рука сама тянется к оружию. Вы бьёте стену, и штукатурка сыплется на пол.'],['do',()=>S.att+=1]]]]}]]]},
+{id:'wounded',if:()=>S.hp<S.max*.4&&(S.rel.nadya>=1||S.g.dorothy=='peace'||S.att>=4),s:()=>[['bg','dorm','Коридор'],['n','Вы садитесь на пол, чтобы перевести дух. Когда открываете глаза, рядом стоит чашка с водой. Тёплая.'],
+ ['if',()=>S.rel.nadya>=1,[['n','На полу у чашки нарисован мелом цветок.']],[['n','Вокруг никого.']]],
+ ['choice',[
+  {t:'Выпить',s:[['if',()=>S.rel.nadya>=1||S.g.dorothy=='peace',[['n','Обычная вода. Чистая. Руки перестают дрожать.'],['do',()=>hp(8)]],[['n','Вода сладкая, с привкусом груши. Голова становится лёгкой, а раны перестают болеть. Слишком быстро.'],['do',()=>{hp(8);S.f.drugged=1}],['cons','Вы выпили чужую воду. Пальцы тяжелеют.']]]]},
+  {t:'Не трогать',s:[['n','Вы поднимаетесь и идёте дальше. Чашка остаётся стоять.']]}]]]},
+{id:'cursed',if:()=>F('girls')&&S.rel.nadya<=-2&&S.att>=2,s:()=>[['bg','play','Коридор'],['n','На стене коридора свежий рисунок: человечек в вашем плаще. У него нет рук. Мел ещё крошится.'],
+ ['ask','Рисунок тянет к себе взгляд. Вы пытаетесь отвернуться.'],['roll','save:wis',13,[['n','Вы стираете рисунок рукавом. Руки на месте.']],[['n','Руки немеют до локтей. Отпускает не сразу.'],['do',()=>{hp(-3);S.f.drugged=1}],['cons','Надежда нарисовала вас без рук. Это ещё скажется.']]]]},
+{id:'gift',if:()=>F('girls')&&S.rel.vera>=3,s:()=>[['bg','hall','Коридор'],['n','На пороге лежит свёрток, перевязанный лентой. Внутри кукла: беличье тельце в кружевном платье. К ней приколота записка: «Чтобы вам не было страшно. В.»'],
+ ['choice',[
+  {t:'Взять куклу',s:[['n','Кукла тёплая. Вы чувствуете, что за вами смотрят её стеклянными глазами.'],['do',()=>{S.f.veradoll=1;S.att+=1}],['cons','Вы взяли подарок Веры. Теперь она видит, где вы.']]},
+  {t:'Оставить на пороге',s:[['n','Утром свёрток исчезнет.'],['do',()=>rel('vera',-1)]]}]]]},
+{id:'cold2',if:()=>Object.values(S.g).filter(v=>v=='gone').length>=2,s:()=>[['bg','hall','Коридор'],['n','В доме стало заметно холоднее. Из стен больше не выглядывают. Мёртвые прячутся от вас.'],
+ ['t','Они боятся меня так же, как её.'],['do',()=>{S.att+=1;if(!S.g.kids)S.g.kids='left'}],['cons','Мёртвые дети прячутся от вас.']]}
+];
+
+function pickEvent(){
+  if(S.evRoom===S.lastRoom)return null;
+  return [...EVENTS,...EVENTS2].find(e=>!S.ev[e.id]&&(!e.room||e.room.includes(S.lastRoom))&&e.if())||null;
+}
+
+const SC={
+intro:()=>[['bg','road','Старая тропа'],['mood','title'],
+ ['n','Когда-то по этой тропе ездили телеги и кареты. Теперь сквозь крошащийся камень лезет трава, а небо затянуто свинцом.'],
+ ['n','В трёх деревнях за месяц пропало семеро младенцев. Ни следов, ни требований выкупа. Вас наняли их найти.'],
+ ['n','Дальше по дороге стоит только одно здание: детский приют «Три добродетели». Его закрыли много лет назад.'],
+ ['n','О приюте в деревнях говорят разное. Что его выпускники вырастали грамотными и честными людьми.'],
+ ['n','Что в доме живут призраки детей и зовут гостей играть в прятки. Что директриса владела фамильной вещью, которую после так и не нашли.'],
+ ['if',()=>S.pc.bg=='noble',[['t','Лоялти. Отец говорил о них за ужином: щедрые, гордые и разорились странно быстро.']]],
+ ['if',()=>S.pc.bg=='urchin',[['t','Меня тоже мог подобрать такой приют. Или подобрал. Я плохо помню, что было до улицы.']]],
+ ['if',()=>S.pc.bg=='acolyte',[['t','В храме про этот дом не говорили вслух. Только крестились, когда проезжали мимо.']]],
+ ['bg','house','Приют «Три добродетели»'],['mood','house'],
+ ['n','Тропа кончается у здания. Крыша с осыпающейся черепицей висит на нём, как рваный саван. Стены во мху гнутся под собственным весом.'],
+ ['n','На тяжёлой двери вырезана надпись. Буквы незнакомые.'],
+ ['ask','Вы пытаетесь прочесть надпись, вырезанную на двери.'],['roll','insight',10,[['n','Буквы обычные. Просто вырезаны так, будто нож держали в кулаке: «Тут вы найдёте любовь».'],['clue','door']],[['n','Прочесть надпись вам не удалось.']]],
+ ['bg','hall','Коридор первого этажа'],['sfx','door'],
+ ['n','Коридор тянется дальше, чем позволяют стены снаружи. Дальний конец тонет во мраке и будто отодвигается, когда на него смотришь.'],
+ ['n','Пахнет цветами и гнилью разом. Под ними что-то едкое, аптечное.'],
+ ['n','Таблички на дверях: «Игровая», «Столовая», «Театральная», «Кухня». Лестница наверх. Дверь в подвал приоткрыта, оттуда тянет тухлым мясом.'],
+ ['t','Семеро младенцев. Если они живы, то где-то здесь.']],
+meet:()=>[['bg','hall','Лестница'],['n','На лестнице стоят две девочки. Живые.'],...MEET()],
+dollgive:()=>[['bg','hall','Коридор'],['n','Вы кладёте тряпичную куклу на пол. Простыня выплывает из стены и долго гладит вышитое имя.','kids'],
+ ['kids','Лиза. Это я. Я и забыла.'],['kids','Дверь в подвал за последним шкафом. И ещё: мама Люба боится своего лица. Покажи ей лицо, и она закричит.'],
+ ['do',()=>{peace('kids');S.f.altar=1;S.f.tip=1;S.f.dollq=0}],['cons','Лиза обрела покой и рассказала вам, чего боится Матушка.']],
+offer:()=>[['bg','dorm','Ночь'],['mood','girls'],['do',()=>S.f.offered=1],
+ ['n','Вера приходит одна. Без сестры она выглядит старше.','vera'],
+ ['vera','Хотите, я скажу вам секрет? Мама старая. Папа на неё больше не смотрит. Она думает, он вернётся, если она накормит его малышами.'],
+ ['vera','А я думаю, он посмотрит на того, у кого будет мамин камень. Камень на шее, серый. Её сердце.'],
+ ['vera','Когда она выйдет к вам, я сорву его. А вы держите её, пока она будет кричать. Договорились?'],
+ ['choice',[
+  {t:'«Договорились»',s:[['vera','Я знала, что вы умный.'],['do',()=>{S.f.pact=1;S.f.heart=1}],['cons','Вы заключили сделку с Верой. Она ждёт своей доли.']]},
+  {t:'«Ты хочешь не свободы. Ты хочешь её место»',need:['sk','insight'],s:[['vera','Да.'],['n','Она отвечает сразу и спокойно. Ей нечего стыдиться.','vera'],['vera','Ну и что? Вам-то нужно, чтобы она умерла. Нам обоим это нужно.'],
+   ['choice',[{t:'«Хорошо. Но после поговорим»',s:[['do',()=>{S.f.pact=1;S.f.heart=1;S.f.pactKnown=1}],['cons','Вы знаете цену сделки с Верой.']]},{t:'«Нет»',s:[['vera','Жалко.'],['do',()=>{rel('vera',-2);S.att+=2}],['cons','Вера отказалась от вас. И расскажет матери о вашем разговоре.']]}]]]},
+  {t:'«Я не торгуюсь с детьми, Вера»',s:[['vera','Я не ребёнок. Я дочь.'],['do',()=>{rel('vera',-2);S.att+=2}],['cons','Вера расскажет матери, о чём вы говорили. Не всё. То, что выгодно ей.']]}]]],
+invite:()=>[['bg','hall','Коридор первого этажа'],['do',()=>S.f.inv=1],
+ ['vera','Вы его убили! Надя, он его убил!'],
+ ['nd','Надежда хлопает в ладоши. Потом показывает на ваши раны и качает головой.'],
+ ['if',()=>F('veraSecret'),[['n','Вера смотрит на вас с благодарностью. Вы знаете её тайну и ничего не сказали.','vera']]],
+ ['vera','Вам надо отдохнуть. Пойдёмте в театр, мы покажем вам представление. Надя очень хочет. Она так может рассказать то, чего не может сказать.'],
+ ['vera','Только нам нужен помощник за занавесом. Это будете вы. Больше ведь некому.'],
+ ['choice',[
+  {t:'Пойти с ними за занавес',s:[['go','trap']]},
+  {t:'«Я посмотрю из зала»',need:['fn',()=>has('puppet')||F('sus')||F('warned'),'Подозрение или предупреждение'],s:[['go','watch']]},
+  {t:'«Вера. Надежда. А третью зовут Любовь»',need:['fn',()=>tier()>=2,'Разгадка: 5 ключевых улик и архив или шабаш'],s:[['go','confront']]},
+  {t:'«Нет. Я забираю малышей и ухожу»',fight:1,s:[['vera','Малышей нельзя. Малыши мамины.'],['n','Она сказала это и сама прикрыла рот ладонью. Поздно.'],['go','finale']]}]]],
+trap:()=>[['bg','theater','Театральная'],['mood','dread'],
+ ['n','За занавесом темно и тесно. Вера держит вас за руку. Рука у неё сухая и очень холодная.'],
+ ['vera','Закройте глаза. Это сюрприз.'],
+ ['ask','Сон накатывает сразу с двух сторон. Вы пытаетесь устоять.'],['roll','save:wis',(F('drugged')?15:13)-(F('antidote')?3:0)-(F('knowsong')?2:0),[['n','Сон накатил тёплой водой. Вы стиснули зубы и устояли. Вторая волна пришла с другой стороны, от младшей, и была слабее.'],['n','Петли затянулись на запястьях, но вы уже не спали.']],
+  [['n','Сон накатил тёплой водой. Вы не успели даже удивиться.'],['do',()=>{hp(-5);S.f.slept=1}]]],
+ ['n','Вы висите. Запястья и щиколотки в петлях, верёвки уходят к потолку. Занавес открыт. В зале сидят куклы, двое высохших детей и две живые девочки в первом ряду.'],
+ ['nd','Надежда дёргает верёвку. Ваша рука машет залу.'],['clue','puppet'],
+ ['if',()=>S.rel.nadya>=2,[['nd','Потом Надежда отпускает верёвку. Смотрит на вас, на сестру, снова на вас. И не дёргает больше.'],['do',()=>S.f.nadyaStopped=1]]],
+ ['w','Смейся.'],['sfx','laugh'],
+ ['n','И вы смеётесь. Смех рвёт горло, вдохнуть не получается. Из стены на сцену выходит женщина в чёрном платье.'],
+ ['do',()=>S.f.trapped=1],['go','finale']],
+watch:()=>[['bg','theater','Театральная'],['mood','dread'],
+ ['n','Вы сели в третий ряд, между плюшевым медведем и куклой без глаз.'],
+ ['vera','Но помощник…'],['nd','Надежда топает ногой.'],['vera','Хорошо. Тогда просто смотрите.'],
+ ['n','Занавес открылся. На верёвках висит кукла, одетая в лоскут вашего плаща. Надежда дёргает верёвки: кукла танцует, кланяется, потом верёвки натягиваются, и она повисает.'],
+ ['n','Вера не смотрит на сцену. Она смотрит на вас и ждёт, когда вы поймёте.'],
+ ['t','На этих верёвках должен был висеть я.'],
+ ['choice',[
+  {t:'Дождаться хозяйку',s:[['w','Невежливо отказываться, когда дети зовут играть.'],['go','finale']]},
+  {t:'Схватить девочек, пока мать не вышла',fight:1,s:[['go','subdue']]}]]],
+confront:()=>[['bg','hall','Коридор первого этажа'],
+ ['n','Улыбка сходит с лица Веры, как снятая перчатка.','vera'],
+ ['vera','Вы читали архив. Джон всегда всё записывал. Глупый Джон.'],
+ ['vera','Да. Мама у нас Любовь. Когда мы вырастем, нас будет трое, и тогда папа на нас посмотрит.'],
+ ['if',()=>tier()>=3,[['t','Вера. Надежда. Любовь. Шабаш, выращенный из собственных дочерей, чтобы вернуть внимание князя демонов. Я понимаю этот дом целиком.'],['do',()=>S.f.truth=1]]],
+ ['menu',[
+  {t:'«Мать зовёт его мужем. Ты для неё способ его вернуть»',need:['rel','vera',1],s:[['n','Вера думает. Видно, как она считает.','vera'],['vera','Мне нужно, чтобы папа смотрел на меня. На меня, а не на неё.'],['vera','Я не буду ей помогать. Мешать тоже не буду. Посмотрим, кто из вас сильнее.'],['do',()=>S.f.veraOut=1],['cons','Вера останется в стороне в бою с матерью.']]},
+  {t:'«Надежда, нарисуй, чего боится мама»',need:['rel','nadya',2],s:[['nd','Надежда долго смотрит на сестру, потом на стену. Потом рисует.'],
+   ['draw','svg:heart','каменное сердце','Серый камень в форме сердца, на шнурке, под чёрным платьем. Она зачёркивает его дважды.'],['w','Надя!'],['do',()=>S.f.heart=1],['cons','Надежда выдала тайну матери.']]},
+  {t:'«Через десять лет вы станете такими, как она. Вы этого хотите?»',need:['f','truth','Полная разгадка'],s:[['vera','Да.'],['nd','Надежда не кивает. Она смотрит на мать, которой ещё нет в комнате, и прячет руки за спину.'],['do',()=>{rel('nadya',2);S.f.nadyaDoubt=1}],['cons','Надежда впервые усомнилась.']]},
+  {t:'«Где ваша мать сейчас?»',s:[['vera','За вашей спиной. Она всегда за спиной.']]}],2],
+ ['choice',[
+  {t:'Ждать, когда она выйдет',s:[['go','finale']]},
+  {t:'Схватить девочек, пока мать не вышла',fight:1,s:[['go','subdue']]}]]],
+subdue:()=>[['mood','battle'],
+ ['vera','Надя, колыбельную!'],
+ ['n','Вера вытаскивает из рукава два тонких ножа для бумаги. Надежда пятится к стене и уже рисует.'],
+ ['fight','girls',[
+  ['n','Надежда роняет мел и садится на пол, обхватив колени. Вера ещё держится на ногах, потом её колыбельная возвращается к ней же, и она оседает, сонная, злая, живая.'],
+  ['n','Вы связываете им руки занавесной верёвкой. Мягко, но крепко.'],['do',()=>{S.f.subdued=1;S.att+=3}],
+  ['w','МОИХ ДЕВОЧЕК?!'],['go','finale']]]],
+flee:()=>[['bg','hall','Лестница'],
+ ['n','Вы связали из простыней перевязь и уложили в неё троих. Больше не поднять. За остальными придётся вернуться.'],
+ ['n','На середине лестницы стало темнее, хотя светлее здесь и не было.'],['do',()=>S.f.early=1],
+ ['w','Куда ты несёшь моё?'],
+ ['choice',[
+  {t:'Уйти чёрным ходом за гобеленом',need:['f','backdoor','Вы знаете о чёрном ходе'],s:[['n','Узкая дверь, гвозди снаружи давно проржавели. Два удара плечом, и вы на улице. Потом ещё два захода, по той же дороге, пока карга ищет вас на лестнице.'],['do',()=>S.f.ending='flee'],['end']]},
+  {t:'Позвать мёртвых, которых вы отпустили',need:['fn',()=>peaceN()>=2,'Отпущено мёртвых: 2'],s:[['n','Из стен выходят те, кому вы помогли. Полная женщина в переднике. Юноша в очках. Девочка в простыне. Они встают на лестнице между вами и темнотой.'],['n','Вы спускаетесь, поднимаетесь, спускаетесь снова. Семеро. Все.'],['do',()=>S.f.ending='flee'],['end']]},
+  {t:'Красться вниз в темноте',tag:'Скрытность 15',s:[['ask','Вы спускаетесь по скрипучей лестнице с тремя младенцами на груди, пока она ищет вас в темноте.'],['roll','stealth',15,
+    [['n','Шаг. Ещё шаг. Она проходит в ладони от вас и не слышит. Вы выносите троих, возвращаетесь за остальными. Дом молчит до рассвета.'],['do',()=>S.f.ending='flee'],['end']],
+    [['n','Ступенька стонет под ногой.'],['go','finale']]]]},
+  {t:'Повернуться к ней',fight:1,s:[['go','finale']]}]]],
+finale:()=>[['mood','dread'],
+ ['n','Она выходит из стены. Сначала рука в рубцах, потом чёрное кружево, потом лицо.'],
+ ['n','Лицо изрезано так, будто его пытались стереть. Она прикрывает его ладонью и тут же опускает руку: поздно.','mother'],
+ ['mother','Не смотри. Я не одета для гостей.'],
+ ['if',()=>F('subdued'),[['mother','Мои девочки. Ты связал моих девочек.'],['n','Она смотрит на верёвки, на вас, снова на верёвки. Ярость в ней борется с расчётом.','mother'],
+  ['mother','Развяжи их. Отдай мне. И я отдам тебе твоих младенцев и уйду из этих мест. Навсегда. Слово Любови.'],
+  ['choice',[
+   {t:'«Забирайте их и уходите»',s:[['n','Вы развязываете верёвки. Надежда сразу бежит к матери. Вера идёт медленно и оглядывается на вас с любопытством.'],['mother','Умный мальчик. Умнее, чем был.'],['n','Стены принимают их, как вода. Наверху, в комнате с открытым окном, просыпаются младенцы.'],['do',()=>S.f.ending='deal'],['end']]},
+   {t:'«Нет»',s:[['mother','Тогда я заберу их с твоего тела.'],['do',()=>S.f.rage=1]]}]]]],
+ ['if',()=>F('pact')&&!F('subdued'),[['n','За спиной матери тихо, как мышь, стоит Вера. Она поднимает руку к шнурку на материнской шее.','vera'],['n','Рывок. Серый камень у Веры в кулаке. Матушка кричит так, что лопаются стёкла, и сразу тускнеет, будто из неё вынули свет.'],['mother','Вера?!'],['vera','Держите её, {adr}. Как договаривались.'],['do',()=>S.f.stolen=1]]],
+ ['if',()=>has('self'),[['mother','А я тебя помню. Тебя звали так же, как сейчас. Ты плакал тише всех. Мне было жаль, когда тебя увезли.']]],
+ ['if',()=>S.pc.cls=='warlock',[['mother','От тебя пахнет чужим покровителем. Мой муж ревнив, колдун.']]],
+ ['if',()=>['cleric','paladin'].includes(S.pc.cls),[['mother','И святой знак на шее. Он здесь не поможет: этот дом освящён не твоим богом.']]],
+ ['if',()=>S.att>=6,[['mother','Я слышала каждый твой шаг. Каждый скрип. Я знаю тебя лучше, чем ты сам.']],[['if',()=>S.wrath>0,[['mother','Ты рылся в моих вещах. В моей комнате. Этого я не прощаю никому.']],[['mother','Ты ходил по моему дому и пугал моих девочек.']]]]],
+ ['menu',[
+  {t:'«На портрете вы были красивы»',need:['ab','cha',12],s:[['mother','…На портрете. Да.'],['n','Она замирает. Рука сама тянется поправить волосы.'],['mother','Он тоже так говорил.'],['do',()=>S.f.flatter=1]]},
+  {t:'Поднять к её лицу осколок зеркала',need:['f','mirror','Осколок зеркала'],s:[['n','Она видит себя. Крик слышен, наверное, в деревне.'],['do',()=>S.f.shown=1]]},
+  {t:'«Я помню шкаф. И помню, как вы стояли за дверцей»',need:['f','memory','Вы вспомнили шкаф'],s:[['mother','Ты не плакал. Ни разу. Я тогда подумала: из этого выйдет толк.'],['t','Вышел.'],['n','Страх, который вы носили тридцать лет, оказывается маленьким. Его можно положить на пол и перешагнуть.'],['do',()=>S.f.resolve=1]]},
+  {t:'«Ваш шабаш не состоится. Я видел рисунок»',need:['clue','coven'],s:[['mother','Рисунок? Надя рисует что попало.'],['n','Но она быстро, слишком быстро смотрит на дочерей. Девочки смотрят на неё в ответ, и в этом взгляде больше вопроса, чем верности.'],['do',()=>S.f.shaken=1]]},
+  {t:'«Граз’зт не вернётся. Он отвернулся, когда вы стали такой»',need:[['clue','papa'],['clue','cult']],s:[['mother','ЗАМОЛЧИ.'],['n','Стены дрожат. Она больше не прикрывает лицо: ей не до того.'],['do',()=>S.f.goaded=1],['cons','Вы разъярили её. Она сильнее, но бьёт вслепую.']]},
+  {t:'«Мой покровитель тоже смотрит, Любовь. Сюда»',need:['cls',['warlock'],'Колдун'],s:[['n','Она отступает на шаг. Первый раз за вечер.'],['mother','Ты привёл в мой дом чужого.'],['do',()=>S.f.patron=1]]},
+  {t:'«Уходите. Отдайте детей и уходите навсегда»',need:['sk','persuasion'],s:[['ask','Вы говорите с каргой так, как говорят с усталым хищником: ровно и без страха.'],['roll','persuasion',S.f.truth?14:17,
+    [['mother','…Он не вернётся. Ты это хотел сказать? Я знаю. Я знаю это давно.'],['n','Она берёт дочерей за руки.'],['mother','Младенцы наверху. Живые. Иди, пока я не передумала.'],['do',()=>S.f.ending='deal'],['end']],
+    [['mother','Уйти? Из своего дома? Из-за тебя?'],['do',()=>S.f.rage=1]]]]}],2],
+ ['n','Разговор окончен. Она улыбается половиной лица.'],
+ ['fight','mother',[
+  ['n','Она падает на колени и закрывает лицо обеими руками.','mother'],['mother','Не смотрите. Пусть он не увидит меня такой.'],
+  ['n','Чёрное платье оседает на пол пустым.'],['mood','calm'],['go','after']]]],
+after:()=>[
+ ['if',()=>F('early')||!F('girls'),[['do',()=>{S.f.ending='freed';S.f.fate='unseen'}],['end']]],
+ ['if',()=>F('subdued'),[['n','Связанные девочки сидят у стены. Вера смотрит на платье матери без слёз. Надежда плачет беззвучно, ртом без языка.','vera'],
+  ['choice',[
+   {t:'Отвезти их в храм связанными',s:[['do',()=>{S.f.ending='freed';S.f.fate='bound'}],['end']]},
+   {t:'Развязать и взять с собой',s:[['do',()=>{S.f.ending='freed';S.f.fate='take'}],['end']]},
+   {t:'Оставить в доме',s:[['do',()=>{S.f.ending='freed';S.f.fate='leave'}],['end']]}]]]],
+ ['if',()=>F('stolen'),[['n','Вера стоит над платьем матери. Серый камень у неё в кулаке светится изнутри.','vera'],['vera','Спасибо, {adr}. Теперь моя очередь.'],
+  ['choice',[
+   {t:'Отпустить её',s:[['vera','Надя. Пойдём.'],['if',()=>S.rel.nadya>=3||F('nadyaDoubt'),[['nd','Надежда смотрит на сестру. Потом на вас. Потом берёт вас за руку.'],['vera','Как хочешь.'],['do',()=>S.f.ending='nadya']],[['nd','Надежда идёт за сестрой, не оглядываясь.'],['do',()=>S.f.ending='vera']]],['end']]},
+   {t:'«Камень останется здесь»',fight:1,s:[['vera','Вы обещали.'],['n','Она прячет камень за спину и зовёт сестру.'],['fight','girls',[['n','Вера роняет камень. Вы разбиваете его каблуком, и по дому проходит долгий вздох, как будто открыли все окна.'],['n','Девочки сидят на полу, сонные и злые.'],['do',()=>{S.f.ending='freed';S.f.fate='bound'}],['end']]]]},
+   {t:'«Надежда, ты не обязана идти с ней»',need:['rel','nadya',2],s:[['nd','Надежда долго смотрит на сестру. Потом подходит к вам и встаёт рядом.'],['vera','Ну и сиди с ним.'],['n','Вера уходит в стену, как мать. Камень светится у неё в кулаке.'],['do',()=>S.f.ending='nadya'],['end']]}]]]],
+ ['n','Девочки стоят у стены. Надежда держит мел и не рисует. Вера смотрит на платье без слёз, внимательно, как смотрят на сломанную вещь.','vera'],
+ ['vera','И что теперь, {adr}?'],
+ ['choice',[
+  {t:'«Вы пойдёте со мной»',s:[['do',()=>{S.f.ending='freed';S.f.fate='take'}],['nd','Надежда берёт вас за палец. Рука у неё в мелу.'],['end']]},
+  {t:'«Надежда, пойдём со мной. Одна»',need:['rel','nadya',3],s:[['nd','Надежда смотрит на сестру. Вера пожимает плечами.'],['vera','Иди. Я не держу.'],['n','Вера остаётся в пустом доме. Когда вы оборачиваетесь на повороте тропы, в окне третьего этажа горит свеча.'],['do',()=>S.f.ending='nadya'],['end']]},
+  {t:'«Я отведу вас в храм. Там знают, что с вами делать»',s:[['do',()=>{S.f.ending='freed';S.f.fate='temple'}],['vera','В храм. Хорошо. Я люблю, когда много слушателей.'],['end']]},
+  {t:'Связать их, пока они не опомнились',fight:1,s:[['fight','girls',[['n','Девочки сидят на полу, связанные. Вера шипит. Надежда смотрит в пол.'],['do',()=>{S.f.ending='freed';S.f.fate='bound'}],['end']]]]},
+  {t:'Забрать малышей и уйти без них',s:[['do',()=>{S.f.ending='freed';S.f.fate='leave'}],['n','Вы уходите. Вам смотрят в спину до самого поворота тропы.'],['end']]}]]]
+};
+/* ---------- map hub ---------- */
+const GHOSTROOM={wc:'dorothy',men:'demid',director:'olivia',library:'john'};
+function enter(id){
+  const r=ROOMS[id];$('#ov').hidden=true;atHub=false;
+  if(!r)return run(SC[id]());
+  setBg(r.bg);$('#loc').textContent=r.n;sfx('door');mood({theater:'theater',babies:'babies',library:'calm',kitchen:'calm',special:'red',mother:'red',altar:'altar',girls:F('girls')?'girls':'house'}[id]||(r.fl==0?'cellar':'house'));
+  const first=!S.seen[id];let pre=[];
+  S.lastRoom=id;
+  if(first){S.seen[id]=1;S.count++;S.evcd=Math.max(0,S.evcd-1);
+    if(S.count==2&&!F('babies'))pre=[['sfx','cry'],['n','Где-то наверху заплакал младенец. Плач оборвался так резко, будто закрыли дверь.']];
+    if(S.count==4)pre=[['mood','dread'],['n','Из стены за вашим плечом вытянулась белая рука и прошла сквозь грудь. Холод.'],['fight','ghost',[['n','Белое втянулось обратно в стену. Дом снова тих.']]]];
+    if(S.count==6)pre=[['mood','dread'],['w','Уходи, пока я добрая.']];
+  }
+  run(pre.concat(first||id=='altar'||S.g[GHOSTROOM[id]]!==undefined?r.s():[['n','Вы уже были здесь. Ничего не изменилось. Кажется.']]));
+}
+function goal(){return !F('babies')?'Найти пропавших младенцев':!F('girls')?'Понять, кто хозяин этого дома':!F('bulezau')?'Подвал: тварь за шкафами':'Выбраться отсюда с детьми'}
+function hub(){
+  $('#box').hidden=true;portrait(null);$('#mid').innerHTML='';hud();
+  if(!F('girls')&&(S.count>=7||F('bulezau')))return run(SC.meet());
+  const ev=pickEvent();if(ev){S.ev[ev.id]=1;S.evRoom=S.lastRoom;const m=EVMETA[ev.id]||['Событие',()=>['Случай']],w=m[1]();S.evlog.push([m[0],w]);return run([['evc',m[0],w],...ev.s()])}
+  if(F('girls')&&F('bulezau')&&!F('inv'))return run(SC.invite());
+  atHub=true;autosave();mood('house');
+  setBg('hub');$('#loc').textContent='План дома';
+  const ov=$('#ov'),fl=FLOORS[S.floor];ov.hidden=false;ov.className='clear';
+  const tiles=fl.areas.match(/[a-z0-9]+/g).filter((v,i,a)=>a.indexOf(v)==i).map(id=>{
+    if(id=='st')return `<div class="stair" style="grid-area:st">лест&shy;ница</div>`;
+    const r=ROOMS[id],lock=r.lock&&r.lock();
+    return `<button style="grid-area:${id}" data-r="${id}" class="${S.seen[id]?'seen':''}" ${lock?'disabled':''}>${lock?'???':r.n}<small>${lock?'стена':S.seen[id]?'осмотрено':id=='bedroom'&&!F('bedroom')?'заперто':''}</small></button>`}).join('');
+  ov.innerHTML=`<div class="col" style="max-width:820px"><h2>${fl.n}</h2><p class="small">Цель: ${goal()}. Осмотрено комнат: ${S.count}. Игра сохранена.</p>
+   <div class="tabs">${[1,2,3,0].map(f=>`<button data-f="${f}" aria-pressed="${f==S.floor}">${FLOORS[f].n}</button>`).join('')}</div>
+   <div class="plan" style="grid-template-areas:${fl.areas};grid-template-columns:${fl.cols}">${tiles}</div></div>`;
+  ov.onclick=e=>{const b=e.target.closest('button');if(!b)return;sfx('click');if(b.dataset.f!=null){S.floor=+b.dataset.f;hub()}else if(b.dataset.r){ov.onclick=null;enter(b.dataset.r)}};
+}
+const pips=v=>`<span class="pips">${[1,2,3,4,5].map(i=>`<i class="${v>=i?'on':v<0&&-v>=i?'off':''}"></i>`).join('')}</span>`;
+function sheetHtml(pc,hpv){const c=CLS[pc.cls],m=a=>Math.floor((pc.ab[a]-10)/2);
+  return `<h3>${pc.name} · ${c.n}, 3-й уровень · ${c.sub}</h3>
+  <ul><li>${Object.keys(AB).map(a=>`${AB[a]} <b>${pc.ab[a]}</b> (${sg(m(a))})`).join(' · ')}</li>
+  <li>Здоровье <b>${hpv}</b> · кость хитов d${c.hd} · бонус мастерства +2 · спасброски: ${c.saves.map(a=>AB[a]).join(', ')}</li>
+  <li>Навыки: ${pc.sk.map(k=>SK[k][0]+(pc.ex.includes(k)?' (компетентность)':'')).join(', ')}</li>
+  <li>Предыстория: ${BGD[pc.bg][0]}. Раса: человек</li><li>Снаряжение: ${c.gear}</li>
+  <li><b>${c.trait[0]}.</b> ${c.trait[1]}</li></ul>`}
+$('#bj').onclick=()=>{if(!S)return;
+  const gs=Object.keys(S.g).map(k=>`<li>${CH[k].n}: ${{peace:'обрёл покой',gone:'развеян силой',left:'остался как был'}[S.g[k]]}</li>`).join('');
+  menu('sheet',`<h2>Журнал</h2><h3>Улики · ${S.clues.length} из ${Object.keys(CL).length}</h3><ul>${S.clues.map(c=>`<li><b>${CL[c][0]}.</b> ${CL[c][1]}</li>`).join('')||'<li>Пока ничего.</li>'}</ul>
+  ${F('girls')?`<h3>Девочки</h3><ul><li>Вера ${pips(S.rel.vera)}</li><li>Надежда ${pips(S.rel.nadya)}</li></ul>`:''}${gs?`<h3>Мёртвые</h3><ul>${gs}</ul>`:''}<h3>События</h3><ul>${S.evlog.map(e=>`<li><b>${e[0]}.</b> Вызвано: ${e[1].join('; ').toLowerCase()}</li>`).join('')||'<li>Пока ничего не случилось.</li>'}</ul><h3>Последствия</h3><ul>${S.cons.map(c=>`<li>${T(c)}</li>`).join('')||'<li>Пока ни одно ваше решение не вернулось к вам.</li>'}</ul>
+  <h3>Дом</h3><ul><li>${S.att<3?'Дом пока присматривается к вам.':S.att<6?'Вы всё время чувствуете на себе взгляд.':'Она знает, где вы. Всегда.'}</li><li>Разгадка: ${['пока не складывается','кусками','почти сложилась','вы понимаете этот дом целиком'][tier()]}</li></ul>${sheetHtml(S.pc,S.hp+'/'+S.max)}`)};
+$('#bd').onclick=()=>{if(!S)return;const c={};S.deck.forEach(x=>c[x]=(c[x]||0)+1);
+  menu('sheet',`<h2>Колода · ${S.deck.length}</h2><ul>${Object.keys(c).map(k=>`<li><b>${cname(k)}</b>${c[k]>1?' ×'+c[k]:''} (${CARDS[k].c} эн.): ${cdesc(k)}</li>`).join('')}</ul>`)};
+$('#bm').onclick=()=>{if(S)menu('pause')};
+
+/* ---------- card battle ---------- */
+function hit(n,flat){const e=B.e;let d=n+(flat?0:B.pm)+B.str;
+  if(B.tr=='rogue'&&!B.sneak){d+=4;B.sneak=1}
+  if(B.tr=='fighter'&&++B.atk%4==0){d*=2;B.note='Критический удар!'}
+  if(B.weakP)d=Math.floor(d*.75);if(e.vuln)d=Math.floor(d*1.5);d=Math.max(0,d);
+  const a=Math.min(e.block,d);e.block-=a;e.hp-=d-a;B.fx+=d-a}
+const blk=(n,flat)=>B.block+=n+(flat?0:B.dm);
+const heal=n=>{S.hp=Math.min(S.max,S.hp+n+(S.pc.cls=='cleric'?3:0));sfx('heal')};
+const hl=n=>n+(S.pc.cls=='cleric'?3:0);
+const CARDS={
+ strike:{n:'Удар',c:1,k:'a',d:p=>`${4+p} урона`,f:()=>hit(4)},
+ defend:{n:'Защита',c:1,k:'d',d:(p,m)=>`${4+m} защиты`,f:()=>blk(4)},
+ feint:{n:'Обманный выпад',c:1,k:'a',d:p=>`${2+p} урона. Враг уязвим 2 хода`,f:()=>{hit(2);B.e.vuln+=2}},
+ combo:{n:'Удар и блок',c:1,k:'a',d:(p,m)=>`${2+p} урона и ${2+m} защиты`,f:()=>{hit(2);blk(2)}},
+ wall:{n:'Глухая оборона',c:2,k:'d',d:(p,m)=>`${10+m} защиты`,f:()=>blk(10)},
+ trip:{n:'Подсечка',c:1,k:'a',d:p=>`${3+p} урона. Враг ослаблен 2 хода`,f:()=>{hit(3);B.e.weak+=2}},
+ cleave:{n:'Мощный удар',c:2,k:'a',d:p=>`${11+p} урона`,f:()=>hit(11)},
+ rage:{n:'Ярость',c:0,k:'s',d:'До конца боя: +2 к урону, каждый удар по вам слабее на 2. Сгорает',x:1,f:()=>{B.str+=2;B.rage=2}},
+ reckless:{n:'Безрассудная атака',c:1,k:'a',d:p=>`${9+p} урона. Вы теряете всю защиту`,f:()=>{hit(9);B.block=0}},
+ frenzy:{n:'Бешенство',c:0,k:'a',d:p=>`${4+p} урона. Сгорает`,x:1,f:()=>hit(4)},
+ secondwind:{n:'Второе дыхание',c:0,k:'s',d:()=>`Вылечить ${hl(8)}. Сгорает`,x:1,f:()=>heal(8)},
+ surge:{n:'Всплеск действий',c:0,k:'s',d:'+2 энергии. Сгорает',x:1,f:()=>B.en+=2},
+ smite:{n:'Божественная кара',c:1,k:'a',d:p=>`${12+p} урона излучением. Сгорает`,x:1,f:()=>hit(12)},
+ layon:{n:'Наложение рук',c:1,k:'s',d:()=>`Вылечить ${hl(12)}. Сгорает`,x:1,f:()=>heal(12)},
+ shieldfaith:{n:'Щит веры',c:1,k:'d',d:(p,m)=>`${7+m} защиты`,f:()=>blk(7)},
+ mark:{n:'Метка охотника',c:1,k:'s',d:p=>`${1+p} урона. Враг уязвим 3 хода. Сгорает`,x:1,f:()=>{hit(1);B.e.vuln+=3}},
+ colossus:{n:'Убийца колоссов',c:1,k:'a',d:p=>`${4+p} урона, ещё +4 по раненому врагу`,f:()=>hit(B.e.hp<B.e.max?8:4)},
+ cure:{n:'Лечение ран',c:1,k:'s',d:()=>`Вылечить ${hl(8)}. Сгорает`,x:1,f:()=>heal(8)},
+ cunning:{n:'Хитрое действие',c:0,k:'s',d:'Взять 2 карты',f:()=>drawN(2)},
+ dodge:{n:'Невероятное уклонение',c:1,k:'d',d:(p,m)=>`${7+m} защиты`,f:()=>blk(7)},
+ shiv:{n:'Удар исподтишка',c:0,k:'a',d:p=>`${1+p} урона`,f:()=>hit(1)},
+ mockery:{n:'Злая насмешка',c:1,k:'a',d:p=>`${2+p} урона. Враг ослаблен 2 хода`,f:()=>{hit(2);B.e.weak+=2}},
+ inspire:{n:'Бардовское вдохновение',c:0,k:'s',d:'Взять 2 карты и +1 энергия. Сгорает',x:1,f:()=>{drawN(2);B.en++}},
+ healword:{n:'Лечащее слово',c:1,k:'s',d:()=>`Вылечить ${hl(7)}. Сгорает`,x:1,f:()=>heal(7)},
+ whispers:{n:'Диссонирующий шёпот',c:1,k:'a',d:p=>`${9+p} урона. Сгорает`,x:1,f:()=>hit(9)},
+ cutting:{n:'Острые слова',c:1,k:'d',d:(p,m)=>`${4+m} защиты. Враг ослаблен 1 ход`,f:()=>{blk(4);B.e.weak+=1}},
+ bolt:{n:'Направляющий снаряд',c:1,k:'a',d:p=>`${8+p} урона. Враг уязвим 2 хода. Сгорает`,x:1,f:()=>{hit(8);B.e.vuln+=2}},
+ turn:{n:'Изгнание нежити',c:2,k:'s',d:(p,m)=>`Враг ослаблен 3 хода, ${8+m} защиты. Сгорает`,x:1,f:()=>{B.e.weak+=3;blk(8)}},
+ bear:{n:'Дикий облик: медведь',c:2,k:'s',d:(p,m)=>`${12+m} защиты и +2 к урону до конца боя. Сгорает`,x:1,f:()=>{blk(12);B.str+=2}},
+ thunder:{n:'Волна грома',c:1,k:'a',d:(p,m)=>`${3+p} урона и ${3+m} защиты`,f:()=>{hit(3);blk(3)}},
+ bark:{n:'Дубовая кожа',c:1,k:'d',d:(p,m)=>`${7+m} защиты`,f:()=>blk(7)},
+ shield:{n:'Щит',c:1,k:'d',d:(p,m)=>`${10+m} защиты`,f:()=>blk(10)},
+ missile:{n:'Волшебная стрела',c:1,k:'a',d:'3 стрелы по 4 урона, всегда попадают',f:()=>{hit(4,1);hit(4,1);hit(4,1)}},
+ ray:{n:'Палящий луч',c:2,k:'a',d:p=>`Три луча по ${3+p} урона. Сгорает`,x:1,f:()=>{hit(3);hit(3);hit(3)}},
+ misty:{n:'Туманный шаг',c:0,k:'d',d:(p,m)=>`${4+m} защиты, взять карту. Сгорает`,x:1,f:()=>{blk(4);drawN(1)}},
+ quicken:{n:'Ускоренное заклинание',c:0,k:'s',d:'+1 энергия и взять карту. Сгорает',x:1,f:()=>{B.en++;drawN(1)}},
+ orb:{n:'Хроматическая сфера',c:1,k:'a',d:p=>`${10+p} урона. Сгорает`,x:1,f:()=>hit(10)},
+ hex:{n:'Сглаз',c:1,k:'s',d:'Враг уязвим 3 хода. Сгорает',x:1,f:()=>B.e.vuln+=3},
+ rebuke:{n:'Адское возмездие',c:1,k:'d',d:(p,m)=>`${3+m} защиты, враг получает 5 урона`,f:()=>{blk(3);hit(5,1)}},
+ hadar:{n:'Руки Хадара',c:1,k:'a',d:p=>`${3+p} урона. Враг ослаблен 1 ход`,f:()=>{hit(3);B.e.weak+=1}},
+ potion:{n:'Зелье лечения',c:0,k:'s',d:()=>`Вылечить ${hl(10)}. Одноразовое`,x:1,once:1,f:()=>heal(10)},
+ holy:{n:'Святая вода',c:1,k:'a',d:'14 урона. Одноразовая',x:1,once:1,f:()=>hit(14,1)},
+ mask:{n:'Алебастровая маска',c:0,k:'s',d:'Враг ослаблен 2 хода. Сгорает',x:1,f:()=>B.e.weak+=2},
+ pearl:{n:'Жемчужина Лоялти',c:0,k:'s',d:'+2 энергии. Сгорает',x:1,f:()=>B.en+=2},
+ blade:{n:'Клинок Лоялти',c:1,k:'a',d:p=>`${7+p} урона`,f:()=>hit(7)},
+ dagger:{n:'Жертвенный кинжал',c:1,k:'a',d:p=>`${11+p} урона. Вы теряете 2 здоровья`,f:()=>{hit(11);S.hp=Math.max(1,S.hp-2)}},
+ poison:{n:'Зелье лечения',c:0,k:'s',d:()=>`Вылечить ${hl(10)}. Одноразовое`,x:1,once:1,f:()=>{S.hp=Math.max(1,S.hp-8);B.weakP+=2;B.note='Это была отрава! −8 здоровья, слабость.';sfx('fail')}},
+ sleep:{n:'Дрёма',c:1,k:'j',d:'Ничего не делает. Сгорает',x:1,f:()=>{}}};
+const cname=c=>c=='strike'?cls().sn:c=='defend'?cls().dn:CARDS[c].n;
+const cdesc=c=>{const d=CARDS[c].d;return typeof d=='function'?d(B?B.pm:PM(),B?B.dm:DM()):d};
+const pool=()=>[...new Set([...cls().deck.filter(c=>c!='strike'&&c!='defend'),...cls().extra])];
+const ICON={a:'⚔',d:'⛨',s:'✦',j:'☾'};
+const FOES={
+ ghost:{n:'Призрак из стены',img:'p_skull',hp:34,p:[{t:'Холодная рука',a:10},{t:'Сквозь стену',b:12},{t:'Вытягивание силы',a:12,drain:1}]},
+ dorothy:{n:'Дороти Мартин',img:'g2',hp:46,p:[{t:'Половник',a:11},{t:'Причитания',weak:2,b:9},{t:'Кипяток',a:7,n:2},{t:'Поднимает котёл',s:1},{t:'Котёл',a:17}]},
+ olivia:{n:'Оливия Лоялти',img:'g1',hp:52,p:[{t:'Пощёчина',a:10},{t:'Гордыня',s:2,b:9},{t:'Вытягивание силы',a:10,drain:1},{t:'Выносит приговор',b:7},{t:'Приговор',a:16}]},
+ john:{n:'Джон Доу',img:'g3',hp:42,p:[{t:'Чтение вслух',weak:2,b:7},{t:'Вытягивание силы',a:11,drain:1},{t:'Сквозь стену',b:13},{t:'Крик',a:14}]},
+ demid:{n:'Демид Воробьёв',img:'g4',hp:54,p:[{t:'Тяжёлая рука',a:13},{t:'Замок',b:15},{t:'Удавка',a:9,weak:1},{t:'Заносит молот',s:1},{t:'Молот',a:18}]},
+ bulezau:{n:'Булезау',img:'p_bulezau',hp:86,rot:1,p:[{t:'Шипастый хвост',a:12},{t:'Топор и хвост',a:7,n:2},{t:'Прыжок',a:9,b:9},{t:'Рёв',s:2},{t:'Удар с разбега',a:13}]},
+ girls:{n:'Вера и Надежда',img:'p_vera',hp:44,p:[{t:'Колыбельная',sleep:2,b:6},{t:'Ножи для бумаги',a:5,n:2},{t:'Рисунок сбывается',weak:2,a:5},{t:'Вера прячется за сестру',b:12,s:1}]},
+ mother:{n:'Матушка Любовь',img:'p_mother',hp:112,p:[{t:'Расщепление разума',a:8,weak:2},{t:'Жуткий смех',laugh:1,b:9},{t:'Прикосновение вампира',a:10,drain:1},{t:'Эфирный шаг',b:15},{t:'Кинжал',a:6,n:2},{t:'Шепчет имя мужа',s:2},{t:'Проклятие',a:14}]}};
+function drawN(n){while(n-->0){if(!B.draw.length){if(!B.disc.length)return;B.draw=shuf(B.disc);B.disc=[]}B.hand.push(B.draw.pop())}}
+function battle(id,win,tries){
+  const f=FOES[id];$('#box').hidden=true;portrait(null);atHub=false;
+  B={id,win,tries:tries||0,loc:B?B.loc:$('#loc').textContent,mood:B?B.mood:(AU.cur?AU.cur.m:AU.want),pre:{hp:S.hp,deck:[...S.deck]},e:{...f,p:f.p.map(x=>({...x})),max:f.hp,block:0,str:0,vuln:0,weak:0,turn:0},
+    block:0,str:0,en:3,weakP:0,draw:shuf([...S.deck]),hand:[],disc:[],turn:1,msg:'',fx:0,pm:PM(),dm:DM(),tr:S.pc.cls,atk:0,sneak:0,rage:0,rec:0};
+  const e=B.e,note=[];mood(id=='mother'||id=='bulezau'?'boss':'battle');sfx('start');B.banner=f.n;
+  if(tries){const cut=Math.floor(e.max*.1*Math.min(tries,4));e.hp-=cut;note.push(`Вы уже знаете его повадки: враг начинает раненым (−${cut}).`)}
+  if(B.tr=='paladin'){e.vuln=2;note.push('Вы чуете нежить: она уязвима.')}
+  if(id=='bulezau'&&F('demon')){e.vuln+=3;note.push('Вы знаете, куда бить.')}
+  if(!['mother','girls'].includes(id))S.att++;
+  if(id=='mother'){
+    e.str=S.wrath>=2?1:0;e.girls=F('subdued')||F('stolen')||(F('veraOut')&&F('nadyaStopped'))?0:F('veraOut')||F('nadyaStopped')?4:3;if(F('shaken')&&e.girls)e.girls++;
+    if(F('stolen')){e.hp=Math.round(e.max*.65);e.p.forEach(x=>x.drain=0);e.p[3]={t:'Тянется к Вере',b:4};note.push('Без каменного сердца она не уходит в стены и не лечится.')}
+    if(F('rage')){e.str+=1;note.push('Она в бешенстве.')}
+    if(F('goaded')){e.str+=2;e.vuln+=2;note.push('Ярость делает её сильнее и неосторожнее.')}
+    if(F('patron')){e.weak+=2;note.push('Она косится на вашу тень.')}
+    if(F('resolve')){B.en=4;note.push('Старый страх больше не держит вас: +1 энергия.')}
+    if(F('eyes')){e.p[0].weak=0;note.push('Вы не смотрите ей в глаза.')}
+    if(F('illusion')){e.p[1].laugh=0;note.push('Её смех больше не берёт вас: вы знаете, что это чары.')}
+    if(F('knowsong')&&e.girls){e.girls+=2;note.push('Вы перепеваете колыбельную девочек.')}
+    if(F('beasts')){e.weak+=1;note.push('Где-то в стенах скребутся звери. Ей не по себе.')}
+    if(F('drugged')){B.weakP+=2;note.push('Пальцы ещё тяжёлые от дыма.')}
+    const pc=Object.values(S.g).filter(v=>v=='peace').length;if(pc){e.hp-=4*pc;note.push(`Мёртвые, которых вы отпустили, держат её за подол: −${4*pc}.`)}
+    if(F('flatter')){e.weak=2;note.push('Она медлит.')}
+    if(F('shown')){e.vuln+=F('tip')?4:3;e.str+=1;note.push('Она в ярости и не помнит себя.')}
+    if(F('heart')&&!F('stolen')){e.p[3]={t:'Хватается за грудь',b:3};note.push('Вы следите за камнем на её шее: в стену ей не уйти.')}
+    if(F('trapped')){B.en=F('slept')?1:2;B.weakP=2;note.push('Вы режете верёвки на ходу.')}
+  }
+  if(id=='girls'&&F('knowsong')){e.p[0].sleep=1;note.push('Вы знаете эту колыбельную: она действует слабее.')}
+  B.msg=note.join(' ');drawN(B.tr=='ranger'?6:5);paint();
+}
+function intent(){const e=B.e,it=e.p[e.turn%e.p.length],o=[];
+  if(it.a){let d=it.a+e.str;if(e.weak)d=Math.floor(d*.75);d=Math.max(0,d-B.rage);o.push(`${d}${it.n>1?'×'+it.n:''} урона`)}
+  if(it.b)o.push(`защита ${it.b}`);if(it.s)o.push('копит силу');if(it.weak)o.push('ослабит вас');if(it.sleep)o.push('усыпляет');if(it.laugh)o.push('отнимет энергию');if(it.drain)o.push('лечится');
+  return `${it.t}: ${o.join(', ')}`}
+function paint(fx){
+  const e=B.e,ov=$('#ov'),pf=B.pfx,pk=B.pk;B.pfx='';ov.hidden=false;ov.className='';$('#loc').textContent='Бой';hud();
+  ov.innerHTML=`<div class="arena">${B.banner?`<span class="banner ${B.banner=='Ваш ход'?'you':''}">${B.banner}</span>`:''}
+   <div class="foe ${fx=='hit'?'hit':fx=='foe'?'atk':fx=='cast'?'cast':''}"><img class="${CUT.includes(e.img)?'':'sq'}" src="${IMG(e.img)}" alt="">${fx=='hit'&&B.fx?`<span class="dmg">−${B.fx}</span>`:''}
+    <span class="intent">${intent()}</span><div class="hpbar"><i style="width:${Math.max(0,e.hp/e.max*100)}%"></i></div>
+    <span class="stat"><b>${e.n}</b> · ${Math.max(0,e.hp)}/${e.max}${e.block?` · <span class="sh">защита ${e.block}</span>`:''}${e.vuln?` · уязвимость ${e.vuln}`:''}${e.weak?` · слабость ${e.weak}`:''}${e.str?` · сила +${e.str}`:''}${e.rot?` · гниль ${e.rot}/ход`:''}</span></div>
+   <p class="msg">${B.msg||'&nbsp;'}</p>
+   <div class="me">${pf?`<span class="pf ${pk}">${pf}</span>`:''}<div class="orbs" title="энергия">${[0,1,2,3,4,5].slice(0,Math.max(3,B.en)).map(i=>`<i class="${i<B.en?'on':''}"></i>`).join('')}</div>
+    <div class="hpbar" style="width:200px"><i style="width:${S.hp/S.max*100}%"></i></div>
+    <span class="stat"><b>${S.hp}/${S.max}</b> · <span class="sh">защита ${B.block}</span>${B.str?` · урон +${B.str}`:''}${B.weakP?` · слабость ${B.weakP}`:''}${B.rage?' · ярость':''}</span></div>
+   <div class="hand">${B.hand.map((c,i)=>cardHtml(c,i,CARDS[c].c>B.en||B.busy)).join('')}</div>
+   <div class="brow"><button class="btn" data-i="99" ${B.busy?'disabled':''}>Закончить ход · E</button><span class="small">колода ${B.draw.length} · сброс ${B.disc.length}</span></div></div>`;
+  ov.onclick=ev=>{const b=ev.target.closest('[data-i]');if(!b||b.disabled)return;+b.dataset.i==99?endTurn():play(+b.dataset.i)};
+  if(fx=='rot'||(fx=='foe'&&pk=='dmg')){flash();shake()}
+}
+function cardHtml(c,i,dis){const k=CARDS[c];return `<button class="cardb ${k.k}" data-i="${i}" ${dis?'disabled':''} style="animation-delay:${i*40}ms"><span class="cost">${k.c}</span><span class="band">${ICON[k.k]}</span><b>${cname(c)}</b><span class="d">${cdesc(c)}</span><kbd>${i+1}</kbd></button>`}
+let SPD=calm?.35:1;const sleep=ms=>new Promise(r=>setTimeout(r,ms*SPD));
+const MAGIC=['missile','ray','orb','hex','hadar','whispers','mockery','rebuke','thunder','misty','quicken','shield','inspire','cutting'],HOLY=['smite','bolt','turn','shieldfaith','holy'];
+function cardSnd(id){const k=CARDS[id],c=S.pc.cls;
+  if(id=='strike'&&(c=='wizard'||c=='sorcerer'))return'fire';if(id=='strike'&&c=='warlock')return'magic';if(id=='strike'&&c=='cleric')return'holyfx';
+  if(id=='rage'||id=='bear'||id=='reckless'||id=='frenzy')return'roar';if(HOLY.includes(id))return'holyfx';if(MAGIC.includes(id))return'magic';
+  return k.k=='a'?'slash':k.k=='d'?'block':'buff'}
+async function play(i){
+  const b=B,id=b.hand[i],k=CARDS[id];if(b.busy||!k||k.c>b.en)return;b.busy=1;
+  const el=$('#ov').querySelector(`.cardb[data-i="${i}"]`);if(el)el.classList.add('use-'+k.k);sfx('whoosh');
+  await sleep(240);if(B!==b)return;
+  const hp0=S.hp,bl0=b.block;
+  b.en-=k.c;b.hand.splice(i,1);b.fx=0;b.msg='';b.note='';b.banner='';k.f();
+  if(!k.x)b.disc.push(id);else if(b.tr=='wizard'&&!b.rec&&!k.once&&id!='sleep'){b.rec=1;b.disc.push(id);b.note='Магическое восстановление: заклинание вернётся.'}
+  if(k.once){const j=S.deck.indexOf(id);if(j>=0)S.deck.splice(j,1)}
+  b.msg=b.note;b.pfx=S.hp>hp0?`+${S.hp-hp0}`:b.block>bl0?`⛨ +${b.block-bl0}`:'';b.pk=S.hp>hp0?'heal':'blk';
+  sfx(cardSnd(id));if(b.fx)sfx('hit');
+  if(b.e.hp<=0){paint('hit');await sleep(750);if(B!==b)return;return won()}
+  b.busy=0;paint(b.fx?'hit':'');
+}
+async function endTurn(){
+  const b=B,e=b.e;if(b.busy)return;b.busy=1;const it=e.p[e.turn%e.p.length],m=[];
+  b.disc.push(...b.hand);b.hand=[];b.msg='';b.banner='Ход врага';sfx('card');paint();
+  await sleep(600);if(B!==b)return;
+  e.block=0;b.banner=it.t;
+  if(it.a){for(let n=it.n||1;n>0;n--){
+    let d=it.a+e.str;if(e.weak)d=Math.floor(d*.75);d=Math.max(0,d-b.rage);const a=Math.min(b.block,d),tk=d-a;b.block-=a;S.hp-=tk;
+    if(it.drain&&tk)e.hp=Math.min(e.max,e.hp+tk);
+    b.pfx=tk?`−${tk}`:'блок';b.pk=tk?'dmg':'blk';b.msg=tk?(a?`Защита сняла ${a}, вы теряете ${tk}.`:`Вы теряете ${tk}.`):'Удар принят на защиту.';
+    sfx('foeatk');if(S.hp<0)S.hp=0;paint('foe');if(!tk)sfx('block');
+    if(S.hp<=0){await sleep(800);if(B!==b)return;return lost()}
+    await sleep(620);if(B!==b)return}}
+  else{sfx(it.b?'block':'roar');paint('cast');await sleep(700);if(B!==b)return}
+  if(it.b)e.block+=it.b;if(it.s){e.str+=it.s;m.push(`${e.n} становится сильнее.`)}
+  if(b.weakP)b.weakP--;if(it.weak){b.weakP+=it.weak;m.push('Руки слабеют: ваши удары слабее.')}
+  if(e.vuln)e.vuln--;if(e.weak)e.weak--;e.turn++;
+  b.turn++;b.block=0;b.en=3;b.sneak=0;
+  if(it.laugh){b.en=2;m.push('Вас душит смех: энергии меньше.');sfx('laugh')}
+  if(it.sleep){for(let q=0;q<it.sleep;q++)b.disc.push('sleep');m.push(`В колоду падает Дрёма ×${it.sleep}.`)}
+  if(e.girls&&e.turn%e.girls==0){b.disc.push('sleep');m.push(F('veraOut')?'Надежда шепчет колыбельную: в колоду падает Дрёма.':'Девочки шепчут колыбельную: в колоду падает Дрёма.')}
+  if(e.rot){S.hp-=e.rot;b.pfx=`−${e.rot}`;b.pk='dmg';m.push('Гниль разъедает кожу.');if(S.hp<=0){S.hp=0;paint('foe');await sleep(800);if(B!==b)return;return lost()}}
+  b.msg=m.join(' ');b.banner='Ваш ход';b.busy=0;drawN(5);paint(e.rot?'rot':'');
+}
+function won(){
+  const ch=shuf(pool()).slice(0,3),ov=$('#ov'),e=B.e,win=B.win,h=Math.ceil(S.max*.2)+(S.pc.cls=='druid'?3:S.pc.cls=='warlock'?5:0);
+  S.hp=Math.min(S.max,S.hp+h);sfx('victory');mood('relief');
+  ov.innerHTML=`<div class="col" style="text-align:center;align-items:center"><h2>${e.n}: бой окончен</h2><p>Вы переводите дух: +${h} здоровья. Возьмите в колоду один приём.</p>
+   <div class="hand">${ch.map((c,i)=>cardHtml(c,i)).join('')}</div><button class="btn" data-i="3">Не брать ничего</button></div>`;
+  ov.onclick=ev=>{const b=ev.target.closest('[data-i]');if(!b)return;const loc=B.loc,mo=B.mood;B=null;mood(mo);if(+b.dataset.i<3)gain(ch[+b.dataset.i]);ov.hidden=true;ov.innerHTML='';ov.onclick=null;$('#loc').textContent=loc;Q=win.concat(Q);hud();next()};
+}
+function lost(){
+  const ov=$('#ov'),id=B.id,win=B.win,pre=B.pre,tr=B.tries+1;sfx('defeat');mood('dread');
+  ov.innerHTML=`<div class="col" style="text-align:center;align-items:center"><h2>Темно</h2><p>Последнее, что вы слышите: скрип мела по стене. Кто-то уже рисует вас.</p><button class="btn" data-i="0">Вернуться к началу боя</button>${id=='mother'?'<button class="btn" data-i="1">Сдаться</button>':''}</div>`;
+  ov.onclick=ev=>{const bt=ev.target.closest('[data-i]');if(!bt)return;if(bt.dataset.i=='1'){B=null;ov.onclick=null;ov.innerHTML='';ov.hidden=true;S.f.ending='puppet';return ending()}S.hp=Math.max(pre.hp,Math.ceil(S.max/2));S.deck=pre.deck;battle(id,win,tr)};
+}
+
+/* ---------- endings ---------- */
+const ENDS={freed:'Освобождение',deal:'Сделка',vera:'Новая хозяйка',nadya:'Надежда',flee:'Бегство',puppet:'Марионетка'};
+function ending(){
+  const f=S.f,kind=f.ending||'freed',n=S.clues.length,pc=peaceN(),t=tier(),P=[];
+  if(kind=='puppet'){
+    P.push('Вы приходите в себя на сцене. Запястья в петлях. Руки поднимаются, когда кто-то за занавесом тянет верёвку. Вы кланяетесь залу.');
+    P.push('Через месяц по деревням поехал кукольный театр: женщина в чёрном, две девочки и большая кукла с вашим лицом. Кукла умеет плакать. В тех деревнях, где они давали представление, потом пропадали дети.');
+    P.push(has('self')?'Матушка Любовь всегда говорила, что из тихого мальчика выйдет толк. Вышел.':'Семеро младенцев так и остались в комнате с распахнутым окном.');
+  }else{
+    if(kind=='deal')P.push('Младенцы ждали вас там, где она обещала: в комнате с открытым окном, живые, сонные, пахнущие травами. Вы вынесли всех семерых. Слово Любови оказалось крепким.');
+    else P.push(`Семерых младенцев вы вынесли в два захода, в перевязи из приютских простыней. К вечеру они проснулись и заорали все разом. Ничего прекраснее вы в жизни не слышали.${f.soothed?' Один, тот, кого вы укачивали ночью, перестал плакать, только когда вы взяли его на руки.':''}${f.ignored?' Один спал ещё два дня и проснулся тихим, слишком тихим.':''}${f.untied||f.antidote?' Чары и зелье сошли с них быстро: к утру все семеро ели и орали, как положено.':''}`);
+    P.push(t>=3?'Старосте вы рассказали всё: про каргу, назвавшуюся Любовью, про шабаш, который она растила из собственных дочерей, про князя демонов, которому в подвале приносили детей. Он записал. Попросил повторить и записал ещё раз.'
+      :t>=1?'Старосте вы рассказали то, что поняли: в доме жила ведьма и крала детей, и ей кто-то помогал. В этой истории не хватало кусков, и вы это знали.'
+      :'Вы вернули детей. Что это был за дом и почему он стал таким, вы так и не узнали. Иногда вам снятся рисунки мелом.');
+    if(kind=='freed'){
+      if(f.fate=='take')P.push(S.rel.vera+S.rel.nadya>=4?'Через год Надежда нарисовала дом с дымом из трубы и три фигурки у крыльца. Ни одна не висела на верёвках. Вера учится лучше всех в храмовой школе и улыбается, только когда на неё смотрят. Вы смотрите часто. Они станут теми, кем родились. Может быть, не только ими.'
+        :'Через полгода пропала соседская кошка. Потом собака. Вера объяснила всё так складно, что вы почти поверили. Вы спите с ножом под подушкой и не знаете, что сделаете, когда им исполнится шестнадцать.');
+      if(f.fate=='temple')P.push('Жрецы приняли девочек и закрыли за ними дверь на три засова. Через год настоятель написал вам: младшая рисует на стенах кельи, старшая выучила все молитвы и читает их с выражением. Он писал, что боится старшей.');
+      if(f.fate=='bound')P.push('Связанных девочек вы довезли до храма на телеге с сеном. Вера всю дорогу пела колыбельную, и возница засыпал на ходу. Жрецы приняли их и поставили у двери стражу. Через год Надежда прислала вам рисунок: человечек без верёвок. Вера не прислала ничего.');
+      if(f.fate=='leave')P.push('Вы ушли и не оглянулись. Через десять лет в тех местах снова стали пропадать дети. Говорят, ведьм теперь две. Говорят, они ищут третью.');
+      if(f.fate=='unseen')P.push('Когда вы уходили, вам показалось, что из окна третьего этажа смотрят вслед. Две пары глаз. Через десять лет в тех местах снова стали пропадать дети.');
+    }
+    if(kind=='deal')P.push('Дом опустел в ту же ночь. Через десять лет на другом краю королевства появился новый приют, «Три сестры». Говорят, им управляют женщина с закрытым лицом и две её дочери. Говорят, там очень хорошо кормят.');
+    if(kind=='vera')P.push('Вера ушла в лес с материнским сердцем в кулаке и сестрой за спиной. Через семь лет в соседнем графстве объявилась ведьма с лицом фарфоровой куклы. Она не крадёт детей. Она их покупает, и платит щедро. Говорят, кто-то в короне из шипов наконец-то на неё смотрит.');
+    if(kind=='nadya')P.push('Надежда живёт с вами. Она рисует каждый день: дома, деревья, вас. Иногда рисует сестру, всегда в окне, всегда спиной. Однажды ночью она нарисовала высокую женщину с лицом фарфоровой куклы и долго, старательно зачёркивала. Вы повесили этот рисунок над дверью.');
+    if(kind=='flee')P.push('Матушку Любовь вы так и не увидели. Мёртвые держали её до рассвета, а на рассвете дом стоял пустой. Младенцы живы. Карга тоже. Иногда по ночам вы слышите, как кто-то тихо стучит в ставню ногтем. Три раза, как ложкой о тарелку.');
+    if(has('self'))P.push(`В деревне вы спросили, кто много лет назад вывез из приюта четырёхлетнего ребёнка по имени ${S.pc.name}. Вам назвали имя. Это уже другая дорога.`);
+    if(f.blessed||f.kindchild||f.lizaline)P.push([f.lizaline?'В тетради Лизы теперь стоит последняя строка: «Лиза убежала».':'',f.blessed?'Над детьми в столовой вы прочли молитву, и мухи улетели в окно.':'',f.kindchild?'Тайник под половицей вы оставили нетронутым. Его хозяин, наверное, рад.':''].filter(Boolean).join(' '));
+    P.push(pc>=3?'Говорят, в доме теперь тихо. Кто-то видел в окне кухни полную женщину: она мешала в котле и пела.':'В доме по-прежнему стучат ложки и хлопают в пустом зале. Туда не ходят.');
+  }
+  let seen=[];try{seen=JSON.parse(localStorage.getItem(KEY+'-ends'))||[]}catch(e){}if(!seen.includes(kind))seen.push(kind);try{localStorage.setItem(KEY+'-ends',JSON.stringify(seen))}catch(e){}
+  try{localStorage.removeItem(KEY+'-auto')}catch(e){}
+  setBg('road');$('#loc').textContent='Тропа назад';$('#box').hidden=true;portrait(null);mood(kind=='puppet'?'dread':'relief');atHub=false;sfx(kind=='puppet'?'defeat':'victory');
+  const ov=$('#ov');ov.hidden=false;ov.className='clear';
+  ov.innerHTML=`<div class="col"><span class="eyebrow">концовка</span><h2>${ENDS[kind]}</h2>${P.map(p=>`<p>${p}</p>`).join('')}
+   <p class="small">Улик найдено: ${n} из ${Object.keys(CL).length}. Разгадка: ${['не сложилась','частичная','почти полная','полная'][t]}. Мёртвых отпущено с миром: ${pc}. Последствий: ${S.cons.length}.</p>
+   <p class="small">Открыто концовок: ${seen.length} из ${Object.keys(ENDS).length}: ${Object.keys(ENDS).map(k=>seen.includes(k)?ENDS[k]:'???').join(' · ')}.</p>
+   <button class="btn" id="again">В главное меню</button>
+   <p class="small">По ваншоту «Приют слёз». Автор приключения: Koroz. Иллюстрации из материалов приключения.</p></div>`;
+  ov.onclick=e=>{if(e.target.id=='again'){ov.onclick=null;title()}};
+}
+
+/* ---------- saves and menus ---------- */
+const slotKey=i=>KEY+(i?'-s'+i:'-auto');
+function readSlot(i){try{return JSON.parse(localStorage.getItem(slotKey(i)))}catch(e){return null}}
+function writeSlot(i){try{S.when=new Date().toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});localStorage.setItem(slotKey(i),JSON.stringify(S));return true}catch(e){return false}}
+const autosave=()=>writeSlot(0);
+const enc=d=>'PS2.'+btoa(unescape(encodeURIComponent(JSON.stringify(d))));
+function dec(t){try{t=t.trim();if(!t.startsWith('PS2.'))return null;const d=JSON.parse(decodeURIComponent(escape(atob(t.slice(4).replace(/\s/g,'')))));return d&&d.pc&&CLS[d.pc.cls]&&Array.isArray(d.deck)&&d.deck.every(c=>CARDS[c])&&d.f&&d.seen?d:null}catch(e){return null}}
+const slotLine=d=>d?`${d.pc.name}, ${CLS[d.pc.cls].n} · комнат ${d.count} · ${d.when||''}`:'пусто';
+function loadGame(i){const d=readSlot(i);if(!d)return;S=norm(d);B=null;Q=[];wait=null;clearInterval(typing);typing=null;const w=$('#whisper');w&&w.remove();$('#ov').innerHTML='';closeMenu();hud();hub()}
+function closeMenu(){$('#menu').hidden=true;$('#menu').innerHTML=''}
+function menu(view,html){
+  const m=$('#menu');m.hidden=false;sfx('click');
+  const vol=`<div class="vol"><span>Музыка</span><input type="range" id="vm" min="0" max="1" step="0.05" value="${AU.mv}" aria-label="Громкость музыки"><span>Эффекты</span><input type="range" id="vs" min="0" max="1" step="0.05" value="${AU.sv}" aria-label="Громкость эффектов"></div>`;
+  const back=S&&view!='pause'&&view!='sheet'&&!$('#ov').querySelector('#mainmenu')?'pause':'';
+  let h='';
+  if(view=='sheet')h=`<div class="sheet">${html}</div><div class="mlist"><button data-a="close">Закрыть</button></div>`;
+  if(view=='pause')h=`<span class="eyebrow">пауза</span><h2>Меню</h2><div class="mlist"><button data-a="close">Вернуться в игру</button>
+    <button data-a="save" ${atHub?'':'disabled'}>Сохранить игру<small>${atHub?'':'только на плане дома'}</small></button><button data-a="load">Загрузить игру</button><button data-a="code">Код сохранения<small>перенос на другое устройство</small></button>
+    <button data-a="main">Выйти в главное меню</button></div>${vol}<p class="small">Игра сама сохраняется каждый раз, когда вы выходите на план дома. Внутри сцены или боя сохраниться нельзя: загрузка вернёт вас к плану.</p>`;
+  if(view=='save')h=`<h2>Сохранить</h2><div class="mlist">${[1,2,3].map(i=>`<button data-s="${i}">Ячейка ${i}<small>${slotLine(readSlot(i))}</small></button>`).join('')}<button data-a="${back||'close'}">Назад</button></div>`;
+  if(view=='load')h=`<h2>Загрузить</h2><div class="mlist">${[0,1,2,3].map(i=>{const d=readSlot(i);return `<button data-l="${i}" ${d?'':'disabled'}>${i?'Ячейка '+i:'Автосохранение'}<small>${slotLine(d)}</small></button>`}).join('')}<button data-a="${back||'close'}">Назад</button></div>`;
+  if(view=='sound')h=`<h2>Звук</h2>${vol}<div class="mlist"><button data-a="close">Назад</button></div>`;
+  if(view=='code'){if(S&&atHub)autosave();const d=readSlot(0);
+    h=`<h2>Код сохранения</h2>${d?`<p class="small">Это ваше последнее автосохранение: ${slotLine(d)}. Скопируйте код и сохраните его где угодно. После каждого нового сохранения код другой.</p>
+     <textarea id="cx" readonly aria-label="Код сохранения">${enc(d)}</textarea><div class="mlist"><button data-a="copy">Скопировать код</button></div>`:'<p class="small">Сохранений пока нет: код появится после первого выхода на план дома.</p>'}
+     <p class="small">Чтобы продолжить игру по коду, вставьте его сюда. Текущая игра будет заменена.</p>
+     <textarea id="ci" placeholder="Вставьте код" aria-label="Вставить код сохранения"></textarea><div class="mlist"><button data-a="import">Загрузить из кода</button><button data-a="${back||'close'}">Назад</button></div>`}
+  m.innerHTML=`<div class="col">${h}</div>`;
+  m.oninput=e=>{if(e.target.id=='vm')AU.mv=+e.target.value;if(e.target.id=='vs')AU.sv=+e.target.value;setVol()};
+  m.onchange=e=>{if(e.target.id=='vs')sfx('clue')};
+  m.onclick=e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;
+    if(a=='close')closeMenu();else if(a=='main'){closeMenu();title()}
+    else if(a=='copy'){const x=$('#cx');navigator.clipboard.writeText(x.value).then(()=>toast('Код скопирован'),()=>{x.focus();x.select();toast('Выделено: скопируйте вручную')})}
+    else if(a=='import'){const d=dec($('#ci').value);if(!d)return toast('Код не подходит','bad');try{localStorage.setItem(slotKey(0),JSON.stringify(d))}catch(e){}S=norm(d);B=null;Q=[];wait=null;clearInterval(typing);typing=null;$('#ov').innerHTML='';closeMenu();hud();toast('Игра загружена из кода');hub()}
+    else if(a)menu(a);
+    else if(b.dataset.s){toast(writeSlot(+b.dataset.s)?'Сохранено в ячейку '+b.dataset.s:'Не удалось сохранить','');menu('save')}
+    else if(b.dataset.l!=null)loadGame(+b.dataset.l)};
+}
+function title(){
+  S=null;B=null;Q=[];wait=null;clearInterval(typing);typing=null;atHub=false;const w=$('#whisper');w&&w.remove();
+  $('#box').hidden=true;portrait(null);$('#mid').innerHTML='';hud();
+  setBg('house');mood('title');$('#loc').textContent='';const auto=readSlot(0),any=[0,1,2,3].some(readSlot),ov=$('#ov');ov.hidden=false;ov.className='clear';
+  ov.innerHTML=`<div class="col" id="mainmenu"><span class="eyebrow">хоррор-приключение на один вечер</span><h1>Приют слёз</h1>
+   <p>В округе пропадают младенцы. Все следы ведут к заброшенному детскому приюту «Три добродетели».</p>
+   <div class="mlist">${auto?`<button data-a="cont">Продолжить<small>${slotLine(auto)}</small></button>`:''}<button data-a="new">Новая игра</button>
+   <button data-a="load" ${any?'':'disabled'}>Загрузить игру</button><button data-a="code">Код сохранения</button><button data-a="sound">Звук</button></div>
+   <p class="small">Пробел или щелчок листают текст, цифры выбирают ответ, Esc открывает меню. В истории есть смерть детей и жестокость взрослых к ним: описаний крови почти нет, но тема тяжёлая.</p></div>`;
+  ov.onclick=e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;
+    if(a=='cont'){ov.onclick=null;loadGame(0)}else if(a=='new'){ov.onclick=null;sfx('click');create()}else menu(a)};
+}
+
+/* ---------- character creation ---------- */
+const COST=[0,1,2,3,4,5,7,9];let CR=null;
+const recBuy=c=>{const pr=CLS[c].rec,v=[7,6,5,4,2,0],b={};pr.forEach((a,i)=>b[a]=v[i]);return{buy:b,plus:[pr[0],pr[1]]}};
+const crSkills=()=>(CLS[CR.cls].sk=='any'?ALLSK:CLS[CR.cls].sk).filter(k=>!BGD[CR.bg][1].includes(k));
+const crFix=()=>{const av=crSkills(),n=CLS[CR.cls].nsk;CR.sk=CR.sk.filter(k=>av.includes(k)).slice(0,n);for(const k of av){if(CR.sk.length>=n)break;if(!CR.sk.includes(k))CR.sk.push(k)}};
+const crScore=a=>8+CR.buy[a]+(CR.plus.includes(a)?1:0);
+const crPc=()=>{const ab={};Object.keys(AB).forEach(a=>ab[a]=crScore(a));const ex=['rogue','bard'].includes(CR.cls)?CR.sk.slice(0,2):[];
+  return{name:CR.name.trim()||'Странник',cls:CR.cls,ab,sk:[...BGD[CR.bg][1],...CR.sk],ex,bg:CR.bg}};
+function create(){CR={step:0,name:'',cls:'fighter',...recBuy('fighter'),bg:'urchin',sk:[]};crFix();crDraw()}
+function crDraw(){
+  const ov=$('#ov'),c=CLS[CR.cls],spent=Object.values(CR.buy).reduce((s,v)=>s+COST[v],0),left=27-spent;let h='',ok=true,why='';
+  if(CR.step==0)h=`<label for="nm">Имя</label><input type="text" id="nm" maxlength="18" placeholder="Странник" value="${CR.name.replace(/"/g,'')}">
+   <label>Класс</label><div class="grid">${Object.keys(CLS).map(k=>`<button class="chip" data-c="${k}" aria-pressed="${k==CR.cls}">${CLS[k].n}</button>`).join('')}</div>
+   <div class="info"><b>${c.n} · ${c.sub}</b><span>Кость хитов d${c.hd}. Спасброски: ${c.saves.map(a=>AB[a]).join(', ')}. Главная характеристика: ${c.prim.map(a=>AB[a]).join(' или ')}.</span>
+   <span><b>${c.trait[0]}.</b> ${c.trait[1]}</span><span>Снаряжение: ${c.gear}.</span>
+   <span>Колода: ${[...new Set(c.deck)].map(k=>k=='strike'?c.sn:k=='defend'?c.dn:CARDS[k].n).join(', ')}.</span></div>
+   <p class="small">Раса: человек. Уровень: третий. Заклинания, на которые в настольной игре тратится ячейка, здесь сгорают до конца боя.</p>`;
+  if(CR.step==1){ok=CR.plus.length==2;why='Выберите две характеристики для человеческого +1';
+   h=`<div class="info"><span>Очков осталось: <b>${left}</b> из 27. Все характеристики начинают с 8, поднять можно не выше 15.</span><span>Человек: +1 к двум разным характеристикам (выбрано ${CR.plus.length} из 2).</span></div>
+   <div class="abt"><span class="h">характеристика</span><span class="h"></span><span class="h">покупка</span><span class="h"></span><span class="h">+1</span><span class="h cst">цена</span><span class="h">итог</span>
+   ${Object.keys(AB).map(a=>{const v=CR.buy[a],up=v<7&&COST[v+1]-COST[v]<=left,sc=crScore(a);
+    return `<b>${AB[a]}${c.prim.includes(a)?' ★':''}</b><button data-m="${a}" ${v>0?'':'disabled'} aria-label="Уменьшить ${AB[a]}">−</button><span class="sc" style="color:var(--bone)">${8+v}</span><button data-p="${a}" ${up?'':'disabled'} aria-label="Увеличить ${AB[a]}">+</button>
+     <button data-h="${a}" aria-pressed="${CR.plus.includes(a)}" ${CR.plus.includes(a)||CR.plus.length<2?'':'disabled'} aria-label="Человеческий бонус к ${AB[a]}">+1</button><span class="small cst">${COST[v]} очк.</span><span class="sc">${sc} <small style="font-size:15px;color:var(--ash)">${(sc>=10?'+':'')+Math.floor((sc-10)/2)}</small></span>`}).join('')}</div>
+   <div class="nav"><button class="btn2" data-a="rec">Расставить за меня</button><button class="btn2" data-a="zero">Сбросить</button></div>
+   <p class="small">★ главная характеристика класса: она прибавляется к урону ваших карт. Ловкость (у варвара Телосложение) прибавляется к защите, у тяжёлых доспехов защита фиксированная. Телосложение даёт здоровье.</p>`}
+  if(CR.step==2){const av=crSkills(),n=c.nsk;ok=CR.sk.length==n;why=`Выберите навыков: ${n}`;
+   h=`<label>Предыстория</label><div class="grid">${Object.keys(BGD).map(k=>`<button class="chip" data-b="${k}" aria-pressed="${k==CR.bg}">${BGD[k][0]}</button>`).join('')}</div>
+   <div class="info"><span>${BGD[CR.bg][2]}</span><span>Даёт навыки: ${BGD[CR.bg][1].map(k=>SK[k][0]).join(', ')}.</span></div>
+   <label>Навыки класса: выбрано ${CR.sk.length} из ${n}</label><div class="grid">${ALLSK.map(k=>{const bg=BGD[CR.bg][1].includes(k),on=CR.sk.includes(k);
+     return `<button class="chip ${bg?'fix':''}" data-k="${k}" aria-pressed="${on}" ${bg||!av.includes(k)||(!on&&CR.sk.length>=n)?'disabled':''}>${SK[k][0]}${bg?' ✓':''}<br><small>${AB[SK[k][1]]}</small></button>`}).join('')}</div>
+   <p class="small">Владение даёт +2 к проверке навыка. В доме чаще всего пригодятся Внимательность, Проницательность, Расследование, Медицина, Религия и История.${['rogue','bard'].includes(CR.cls)?' Компетентность (+4) получат два первых выбранных навыка: '+CR.sk.slice(0,2).map(k=>SK[k][0]).join(', ')+'.':''}</p>`}
+  if(CR.step==3){const pc=crPc(),f=fresh(pc);h=`<div class="sheet">${sheetHtml(pc,f.max)}</div><p class="small">Здоровье: d${c.hd} на первом уровне и по ${c.hd/2+1} на втором и третьем, плюс модификатор Телосложения за каждый уровень${c.hpb?', плюс драконья стойкость':''}.</p>`}
+  ov.hidden=false;ov.className='';
+  ov.innerHTML=`<div class="col" id="cr"><span class="eyebrow">создание персонажа</span><h2>${['Кто вы','Характеристики','Навыки и прошлое','Лист персонажа'][CR.step]}</h2>
+   <div class="steps">${['Имя и класс','Характеристики','Навыки','Итог'].map((t,i)=>`<span class="${i==CR.step?'on':''}">${i+1}. ${t}</span>`).join('')}</div>${h}
+   <div class="nav"><button class="btn2" data-a="back">${CR.step?'Назад':'В главное меню'}</button><span class="small" style="align-self:center">${ok?'':why}</span><button class="btn2" data-a="next" ${ok?'':'disabled'}>${CR.step==3?'Войти в дом':'Дальше'}</button></div></div>`;
+  const nm=$('#nm');if(nm)nm.oninput=()=>CR.name=nm.value;
+  ov.onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const d=b.dataset;sfx('click');
+    if(d.c){CR.cls=d.c;Object.assign(CR,recBuy(d.c));crFix()}
+    else if(d.p)CR.buy[d.p]++;else if(d.m)CR.buy[d.m]--;
+    else if(d.h)CR.plus=CR.plus.includes(d.h)?CR.plus.filter(x=>x!=d.h):[...CR.plus,d.h];
+    else if(d.b){CR.bg=d.b;crFix()}
+    else if(d.k)CR.sk=CR.sk.includes(d.k)?CR.sk.filter(x=>x!=d.k):[...CR.sk,d.k];
+    else if(d.a=='rec')Object.assign(CR,recBuy(CR.cls));
+    else if(d.a=='zero'){Object.keys(CR.buy).forEach(a=>CR.buy[a]=0);CR.plus=[]}
+    else if(d.a=='back'){if(!CR.step){ov.onclick=null;return title()}CR.step--}
+    else if(d.a=='next'){if(CR.step==3){ov.onclick=null;ov.hidden=true;ov.innerHTML='';S=fresh(crPc());hud();return run(SC.intro())}CR.step++}
+    crDraw()};
+}
+
+/* ---------- dust ---------- */
+(function dust(){
+  if(calm)return;const c=$('#fx'),x=c.getContext('2d');let P=[];
+  const rs=()=>{c.width=c.clientWidth;c.height=c.clientHeight;P=Array.from({length:46},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:.6+Math.random()*1.6,v:.1+Math.random()*.3,p:Math.random()*6}))};
+  addEventListener('resize',rs);rs();
+  (function f(t){x.clearRect(0,0,c.width,c.height);for(const p of P){p.y-=p.v;p.x+=Math.sin(t/1700+p.p)*.25;if(p.y<-4){p.y=c.height+4;p.x=Math.random()*c.width}
+    x.globalAlpha=.18+.18*Math.sin(t/900+p.p);x.fillStyle='#e9e2d0';x.beginPath();x.arc(p.x,p.y,p.r,0,6.3);x.fill()}requestAnimationFrame(f)})(0);
+})();
+title();
+</script>
+
+</body></html>
